@@ -40,3 +40,11 @@ O frontend rodar em `http://localhost:5173`.
 - **Upload de Currculo:** Suporte para arquivos .pdf e .docx.
 - **Matching Inteligente:** Clculo de score de afinidade (0-100%) em tempo real.
 - **Gesto de Vagas:** Interface para cadastrar novas oportunidades no Firestore.
+
+## Publicao (GitHub & Vercel)
+
+Para subir o projeto e conectar na Vercel:
+1. Abra o **GitHub Desktop** e adicione esta pasta como um repositório.
+2. Publique o repositório no seu GitHub.
+3. Na Vercel, importe o repositório.
+4. O arquivo `vercel.json` já está configurado para gerenciar o frontend (Vite) e o backend (Python API) simultaneamente.
