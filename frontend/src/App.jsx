@@ -18,9 +18,11 @@ function App() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [regData, setRegData] = useState({ fullName: '', email: '', address: '', password: '' });
 
+  const API_URL = import.meta.env.VITE_API_URL || '';
+
   const fetchJobs = async () => {
     try {
-      const res = await fetch('/api/jobs/');
+      const res = await fetch(`${API_URL}/api/jobs/`);
       const data = await res.json();
       setJobs(data);
     } catch (err) {
@@ -77,7 +79,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const res = await fetch('/api/match/', {
+      const res = await fetch(`${API_URL}/api/match/`, {
         method: 'POST',
         body: formData,
       });
