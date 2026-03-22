@@ -25,38 +25,49 @@ download_nltk_data()
 def clean_text(text):
     """
     Limpa o texto utilizando NLTK.
-    Remove stopwords, pontuações e extrai os lemas.
-    Dá peso extra (duplicação) para substantivos (NOUN), adjetivos e termos técnicos encontrados.
-    Isso substitui o spaCy em ambientes Python 3.14 onde o pydantic quebra.
+    Preserva linguagens e frameworks que contêm caracteres especiais (C#, C++, .NET)
+    mapeando-os para texto antes da tokenização.
     """
     if not text:
         return ""
     
-    # Limpeza inicial e tokenização
     text = text.lower().replace('\n', ' ').replace('\r', '')
+    
+    # Mapeamento de termos sensíveis ao tokenizador
+    text = text.replace('c#', 'csharp')
+    text = text.replace('c++', 'cpp')
+    text = text.replace('.net', 'dotnet')
+    text = text.replace('node.js', 'nodejs')
+    text = text.replace('react.js', 'reactjs')
+    text = text.replace('vue.js', 'vuejs')
+    
     tokens = word_tokenize(text)
     
-    # Remoção de Stopwords e pontuação
     stop_words = set(stopwords.words('english')) | set(stopwords.words('portuguese'))
-    tokens = [t for t in tokens if t.isalpha() and t not in stop_words]
+    # Permitir apenas palavras alfanuméricas
+    tokens = [t for t in tokens if t.isalnum() and t not in stop_words]
     
-    # POS Tagging para identificar substantivos
     tagged_tokens = nltk.pos_tag(tokens)
     
-    # Lematização e Estratégia de Pesos
     lemmatizer = WordNetLemmatizer()
     final_tokens = []
     
+    # Palavras-chave que não devem ser lematizadas para não serem destruídas (ex: css -> cs)
+    tech_keywords = {'css', 'html', 'javascript', 'csharp', 'cpp', 'dotnet', 'sql', 'python', 'java', 'react', 'nodejs'}
+    
     for word, tag in tagged_tokens:
-        lemma = lemmatizer.lemmatize(word)
+        if word in tech_keywords:
+            lemma = word
+        else:
+            lemma = lemmatizer.lemmatize(word)
         final_tokens.append(lemma)
         
-        # Substantivos (NN, NNP, NNS, NNPS) ganham pesso 2 para o TF-IDF
-        if tag.startswith('NN'):
+        # Duplica termos técnicos para dar 2x peso no TF-IDF
+        if tag.startswith('NN') or word in tech_keywords:
             final_tokens.append(lemma)
             
     return " ".join(final_tokens)
 
 if __name__ == "__main__":
-    test_text = "Experienced software engineer with knowledge in Python, React, and Machine Learning. Trabalhou no Google."
+    test_text = "Conhecimento intermediário em C#, C++, Node.js, CSS e Machine Learning."
     print(clean_text(test_text))

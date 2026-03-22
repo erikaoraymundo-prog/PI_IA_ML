@@ -72,8 +72,8 @@ async def match_resume(file: UploadFile = File(...)):
         # 6. Cleanup temp file
         os.remove(temp_path)
         
-        # Filter results with a minimum threshold (10%) and sort
-        results = [r for r in results if r['score'] >= 10]
+        # Filter results with a minimum threshold (5%) and sort
+        results = [r for r in results if r['score'] >= 5]
         results = sorted(results, key=lambda x: x['score'], reverse=True)
         
         # 7. Build Course Suggestions if no matches
