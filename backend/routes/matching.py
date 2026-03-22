@@ -16,9 +16,11 @@ async def match_resume(file: UploadFile = File(...)):
     4. Save results and return scores.
     """
     try:
-        # 1. Save locally temporarily (using /tmp/ for Vercel compatibility)
+        import tempfile
+        # 1. Save locally temporarily (Cross-platform compatible)
         temp_filename = f"tmp_{uuid.uuid4()}_{file.filename}"
-        temp_path = os.path.join("/tmp", temp_filename)
+        temp_dir = tempfile.gettempdir()
+        temp_path = os.path.join(temp_dir, temp_filename)
         with open(temp_path, "wb") as buffer:
             buffer.write(await file.read())
         
