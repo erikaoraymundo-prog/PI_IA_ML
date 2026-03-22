@@ -77,8 +77,8 @@ async def match_resume(file: UploadFile = File(...)):
             # Fallback for generics
             if not suggestions:
                 suggestions.extend([
-                    {"title": "Lógica de Programação (Fundação Bradesco)", "url": "https://www.ev.org.br/cursos/logica-de-programacao", "description": "A base para qualquer carreira em tecnologia, gratuito na Escola Virtual."},
-                    {"title": "CS50 - Introdução à Ciência da Computação", "url": "https://pll.harvard.edu/course/cs50-introduction-computer-science", "description": "O famoso curso de Harvard de introdução ao mundo da computação."}
+                    {"title": "Lógica e Fundamentos (Fundação Bradesco)", "url": "https://www.ev.org.br/cursos/logica-de-programacao", "description": "Cursos gratuitos incríveis na Escola Virtual para formar sua base técnica."},
+                    {"title": "Santander Open Academy (Múltiplos Temas)", "url": "https://app.santanderopenacademy.com/pt-BR/program", "description": "Bolsas de estudo 100% gratuitas em tecnologia e idiomas oferecidas pelo Santander Avançar."}
                 ])
         
         return {
