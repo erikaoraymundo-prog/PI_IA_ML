@@ -3,6 +3,8 @@ import { auth, signInWithGoogle, logout, db } from './firebase';
 import { onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import './index.css';
+import ProductPage from './pages/ProductPage';
+import LGPDPage from './pages/LGPDPage';
 
 const HERO_IMAGE_URL = "/hero_talent_match.png";
 
@@ -12,6 +14,7 @@ function App() {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showMatchModal, setShowMatchModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState('home');
   
   // Auth State
   const [user, setUser] = useState(null);
@@ -104,10 +107,10 @@ function App() {
             global<span className="logo-accent">TalentBridge</span>
           </div>
           <div className="nav-links">
-            <a href="#" className="active">Início</a>
-            <a href="#">Nosso Produto</a>
-            <a href="#">LGPD</a>
-            <a href="#">Sobre Nós</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('home'); }} className={currentPage === 'home' ? 'active' : ''}>Início</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('product'); }} className={currentPage === 'product' ? 'active' : ''}>Nosso Produto</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('lgpd'); }} className={currentPage === 'lgpd' ? 'active' : ''}>LGPD</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('about'); }} className={currentPage === 'about' ? 'active' : ''}>Sobre Nós</a>
           </div>
           <div className="auth-group" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
             {user ? (
@@ -125,8 +128,10 @@ function App() {
         </div>
       </nav>
 
-      <section className="container hero">
-        <div className="hero-content">
+      {currentPage === 'home' && (
+        <>
+          <section className="container hero">
+            <div className="hero-content">
           <h1 className="hero-title">Conectando os melhores talentos de tech às oportunidades reais</h1>
           <p className="hero-subtitle">
             A forma mais simples de enviar seu currículo ou encontrar o profissional ideal para sua empresa. Precisão técnica aliada à visão humana.
@@ -236,6 +241,11 @@ function App() {
           <button className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem' }}>Criar Conta Grátis</button>
         </div>
       </section>
+      </>
+      )}
+
+      {currentPage === 'product' && <ProductPage />}
+      {currentPage === 'lgpd' && <LGPDPage />}
 
       <footer>
         <div className="container">
