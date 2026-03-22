@@ -30,32 +30,53 @@ async def match_resume(file: UploadFile = File(...)):
         # 3. Extract Text
         content = extract_text(temp_path)
         
-        # 4. Perform Matching
+        # 4. Gather Internal and External Jobs
         jobs_ref = db.collection('jobs')
-        jobs = jobs_ref.stream()
+        internal_jobs_snapshot = jobs_ref.stream()
         
-        results = []
-        for doc in jobs:
+        all_jobs = []
+        for doc in internal_jobs_snapshot:
             job_data = doc.to_dict()
+            job_data['job_id'] = doc.id
+            job_data['source'] = 'Interna'
+            job_data['url'] = ''
+            all_jobs.append(job_data)
+            
+        # Fetch external jobs
+        from backend.job_apis import fetch_external_jobs
+        external_jobs = []
+        try:
+            external_jobs = fetch_external_jobs()
+            for ej in external_jobs:
+                ej['job_id'] = ej['id']
+            all_jobs.extend(external_jobs)
+        except Exception as e:
+            print(f"Failed to fetch external jobs: {e}")
+        
+        # 5. Perform Matching
+        results = []
+        for job_data in all_jobs:
             job_text = f"{job_data.get('title', '')} {job_data.get('description', '')} {job_data.get('requirements', '')}"
             
             score = calculate_match_score(content, job_text)
             
             match_data = {
-                'job_id': doc.id,
+                'job_id': job_data.get('job_id'),
                 'job_title': job_data.get('title'),
-                'score': score
+                'score': score,
+                'source': job_data.get('source'),
+                'url': job_data.get('url')
             }
             results.append(match_data)
         
-        # 5. Cleanup temp file
+        # 6. Cleanup temp file
         os.remove(temp_path)
         
         # Filter results with a minimum threshold (10%) and sort
         results = [r for r in results if r['score'] >= 10]
         results = sorted(results, key=lambda x: x['score'], reverse=True)
         
-        # 5. Build Course Suggestions if no matches
+        # 7. Build Course Suggestions if no matches
         suggestions = []
         if not results:
             content_lower = content.lower()

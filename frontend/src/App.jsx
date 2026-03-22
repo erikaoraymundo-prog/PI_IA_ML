@@ -298,8 +298,16 @@ function App() {
                 {matches.map((match, idx) => (
                   <div key={idx} style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between' }}>
                     <div>
-                      <h4 style={{ color: 'var(--primary)' }}>{match.job_title}</h4>
-                      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>ID: {match.job_id}</p>
+                      <h4 style={{ color: 'var(--primary)', margin: '0 0 0.2rem 0' }}>
+                        {match.url ? (
+                          <a href={match.url} target="_blank" rel="noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
+                            {match.job_title} <span style={{fontSize: '0.8rem'}}>↗</span>
+                          </a>
+                        ) : match.job_title}
+                      </h4>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>
+                        {match.source ? `Fonte: ${match.source} | ` : ''}ID: {match.job_id}
+                      </p>
                     </div>
                     <span style={{ fontWeight: 700, color: 'var(--secondary)' }}>{match.score}%</span>
                   </div>
