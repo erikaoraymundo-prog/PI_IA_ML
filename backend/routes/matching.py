@@ -51,12 +51,40 @@ async def match_resume(file: UploadFile = File(...)):
         # 5. Cleanup temp file
         os.remove(temp_path)
         
-        # Sort results by score
+        # Filter results with a minimum threshold (10%) and sort
+        results = [r for r in results if r['score'] >= 10]
         results = sorted(results, key=lambda x: x['score'], reverse=True)
+        
+        # 5. Build Course Suggestions if no matches
+        suggestions = []
+        if not results:
+            content_lower = content.lower()
+            if "react" in content_lower or "javascript" in content_lower or "html" in content_lower:
+                suggestions.extend([
+                    {"title": "Desenvolvimento Web Web (Rocketseat)", "url": "https://app.rocketseat.com.br/discover", "description": "Formação 100% gratuita para iniciar no mundo do Front-end e Web."},
+                    {"title": "React na Prática (FreeCodeCamp)", "url": "https://www.freecodecamp.org/portuguese/", "description": "Aprenda construindo projetos passo a passo."}
+                ])
+            if "python" in content_lower or "dados" in content_lower or "sql" in content_lower:
+                suggestions.extend([
+                    {"title": "Python para Análise de Dados (DSA)", "url": "https://www.datascienceacademy.com.br/course/python-fundamentos", "description": "Introdução forte a Data Science, Python e Banco de Dados com certificado grátis."},
+                    {"title": "Google Data Analytics", "url": "https://www.coursera.org/professional-certificates/google-data-analytics", "description": "Certificação real do Google (disponível com bolsa ou auditoria no Coursera)."}
+                ])
+            if "java" in content_lower or "c#" in content_lower or "backend" in content_lower:
+                suggestions.extend([
+                    {"title": "Programação Backend (FIAP ON)", "url": "https://on.fiap.com.br/", "description": "Cursos rápidos da FIAP focados em bases de desenvolvimento de software."}
+                ])
+            
+            # Fallback for generics
+            if not suggestions:
+                suggestions.extend([
+                    {"title": "Lógica de Programação (Fundação Bradesco)", "url": "https://www.ev.org.br/cursos/logica-de-programacao", "description": "A base para qualquer carreira em tecnologia, gratuito na Escola Virtual."},
+                    {"title": "CS50 - Introdução à Ciência da Computação", "url": "https://pll.harvard.edu/course/cs50-introduction-computer-science", "description": "O famoso curso de Harvard de introdução ao mundo da computação."}
+                ])
         
         return {
             "resume_url": resume_url,
-            "matches": results
+            "matches": results,
+            "suggestions": suggestions[:3] # Limit to 3 max
         }
         
     except Exception as e:

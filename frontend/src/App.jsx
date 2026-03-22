@@ -9,6 +9,7 @@ const HERO_IMAGE_URL = "/hero_talent_match.png";
 function App() {
   const [jobs, setJobs] = useState([]);
   const [matches, setMatches] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showMatchModal, setShowMatchModal] = useState(false);
   
@@ -85,6 +86,7 @@ function App() {
       });
       const data = await res.json();
       setMatches(data.matches || []);
+      setSuggestions(data.suggestions || []);
       setShowMatchModal(true);
     } catch (err) {
       console.error("Error matching resume:", err);
@@ -294,7 +296,26 @@ function App() {
                 ))}
               </div>
             ) : (
-              <p style={{ marginTop: '1.5rem', color: 'var(--text-muted)' }}>Nenhum match encontrado para o perfil atual.</p>
+              <div style={{ marginTop: '1.5rem' }}>
+                <div style={{ background: '#fff3cd', padding: '1rem', borderRadius: '8px', color: '#856404', marginBottom: '1.5rem', border: '1px solid #ffeeba' }}>
+                  <p style={{ margin: 0 }}><strong>Nenhum match ideal encontrado.</strong></p>
+                  <p style={{ fontSize: '0.9rem', marginTop: '0.5rem', margin: '0.5rem 0 0 0' }}>Que tal dar um up nas suas habilidades com estes cursos gratuitos?</p>
+                </div>
+                
+                {suggestions && suggestions.length > 0 && (
+                  <div>
+                    <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--text-dark)' }}>🎯 Recomendado pela IA:</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {suggestions.map((course, idx) => (
+                        <a key={idx} href={course.url} target="_blank" rel="noreferrer" style={{ display: 'block', padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', textDecoration: 'none', color: 'inherit', background: '#f8fbfc', transition: 'border-color 0.2s' }}>
+                          <h4 style={{ color: 'var(--primary)', margin: '0 0 0.4rem 0' }}>{course.title}</h4>
+                          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>{course.description}</p>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
             <button className="btn btn-primary" style={{ width: '100%', marginTop: '2rem' }} onClick={() => setShowMatchModal(false)}>Fechar</button>
           </div>
