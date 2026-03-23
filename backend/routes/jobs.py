@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, Body
-from backend.firebase_config import db
+from fastapi import APIRouter, HTTPException
+from backend.firebase_config import get_db
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -12,24 +12,30 @@ class Job(BaseModel):
 
 @router.get("/", response_model=List[dict])
 async def get_jobs():
-    """
-    List all active jobs from Firestore.
-    """
-    jobs_ref = db.collection('jobs')
-    docs = jobs_ref.stream()
-    jobs = []
-    for doc in docs:
-        job_data = doc.to_dict()
-        job_data['id'] = doc.id
-        jobs.append(job_data)
-    return jobs
+    """List all active jobs from Firestore."""
+    try:
+        db = get_db()
+        if not db:
+            return []
+        jobs_ref = db.collection('jobs')
+        docs = jobs_ref.stream()
+        jobs = []
+        for doc in docs:
+            job_data = doc.to_dict()
+            job_data['id'] = doc.id
+            jobs.append(job_data)
+        return jobs
+    except Exception as e:
+        print(f"[JOBS] ERRO ao listar vagas: {e}")
+        return []
 
 @router.post("/")
 async def create_job(job: Job):
-    """
-    Create a new job posting in Firestore.
-    """
+    """Create a new job posting in Firestore."""
     try:
+        db = get_db()
+        if not db:
+            raise HTTPException(status_code=503, detail="Firestore indisponível.")
         new_job_ref = db.collection('jobs').document()
         new_job_ref.set({
             'title': job.title,
@@ -37,5 +43,7 @@ async def create_job(job: Job):
             'requirements': job.requirements
         })
         return {"id": new_job_ref.id, "message": "Job created successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

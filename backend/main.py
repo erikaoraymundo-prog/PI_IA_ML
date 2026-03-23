@@ -1,7 +1,7 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .firebase_config import db, bucket
-from .routes import jobs, matching
+from backend.firebase_config import get_firebase_status
+from backend.routes import jobs, matching
 import os
 
 app = FastAPI(title="Resume Match API")
@@ -22,6 +22,16 @@ app.include_router(matching.router, prefix="/api/match", tags=["Matching"])
 @app.get("/")
 async def root():
     return {"message": "Resume Match AI/ML API is running"}
+
+@app.get("/api/status")
+async def status():
+    """Retorna o status da conexão Firebase. Útil para diagnóstico."""
+    fb = get_firebase_status()
+    return {
+        "api": "running",
+        "firebase_connected": fb["connected"],
+        "firebase_error": fb["error"],
+    }
 
 if __name__ == "__main__":
     import uvicorn

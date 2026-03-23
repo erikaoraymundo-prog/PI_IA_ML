@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { auth, signInWithGoogle, logout, db } from './firebase';
 import { onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { calculateMatchScores, extractTextFromPDF, generateCourseSuggestions } from './matchingEngine';
 import './index.css';
 import ProductPage from './pages/ProductPage';
 import LGPDPage from './pages/LGPDPage';
@@ -22,15 +23,13 @@ function App() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [regData, setRegData] = useState({ fullName: '', email: '', address: '', password: '' });
 
-  const API_URL = import.meta.env.VITE_API_URL || '';
 
   const fetchJobs = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/jobs/`);
-      const data = await res.json();
-      setJobs(data);
+      const snap = await getDocs(collection(db, 'jobs'));
+      setJobs(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     } catch (err) {
-      console.error("Error fetching jobs:", err);
+      console.error('Error fetching jobs:', err);
     }
   };
 
@@ -79,23 +78,48 @@ function App() {
     if (!file) return;
 
     setLoading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
-      const res = await fetch(`${API_URL}/api/match/`, {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      setMatches(data.matches || []);
-      setSuggestions(data.suggestions || []);
+      // 1. Extrai texto do PDF/DOCX no browser
+      let resumeText = '';
+      if (file.name.toLowerCase().endsWith('.pdf')) {
+        resumeText = await extractTextFromPDF(file);
+      } else {
+        // Para .docx e outros, lê como texto plano (fallback)
+        resumeText = await file.text();
+      }
+
+      if (!resumeText.trim()) {
+        alert('Não foi possível extrair texto do currículo. Verifique se o arquivo não está protegido.');
+        return;
+      }
+
+      // 2. Busca vagas do Firestore diretamente via SDK cliente
+      const jobsSnap = await getDocs(collection(db, 'jobs'));
+      const jobs = jobsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      if (jobs.length === 0) {
+        setMatches([]);
+        setSuggestions(generateCourseSuggestions(resumeText));
+        setShowMatchModal(true);
+        return;
+      }
+
+      // 3. Calcula matching client-side (TF-IDF bulk)
+      const THRESHOLD = 8;
+      const allScores = calculateMatchScores(resumeText, jobs);
+      const matched = allScores.filter(r => r.score >= THRESHOLD);
+
+      setMatches(matched);
+      setSuggestions(matched.length === 0 ? generateCourseSuggestions(resumeText) : []);
       setShowMatchModal(true);
+
     } catch (err) {
-      console.error("Error matching resume:", err);
-      alert("Falha ao processar currículo.");
+      console.error('Erro ao processar currículo:', err);
+      alert('Falha ao processar currículo: ' + err.message);
     } finally {
       setLoading(false);
+      // Limpa o input para permitir reenvio do mesmo arquivo
+      e.target.value = '';
     }
   };
 
