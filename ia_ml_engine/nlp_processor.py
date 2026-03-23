@@ -1,72 +1,94 @@
 import re
+import unicodedata
 import nltk
 from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
-# Baixa os modelos necessários do NLTK
-def download_nltk_data():
-    try:
-        nltk.data.find('corpora/stopwords')
-        nltk.data.find('tokenizers/punkt')
-        nltk.data.find('tokenizers/punkt_tab')
-        nltk.data.find('corpora/wordnet')
-        nltk.data.find('taggers/averaged_perceptron_tagger_eng')
-    except LookupError:
-        nltk.download('stopwords')
-        nltk.download('punkt')
-        nltk.download('punkt_tab')
-        nltk.download('wordnet')
-        nltk.download('averaged_perceptron_tagger')
-        nltk.download('averaged_perceptron_tagger_eng')
+# ---------------------------------------------------------------------------
+# Tech keywords: mapeamento de termos especiais + boost de peso
+# ---------------------------------------------------------------------------
+TECH_MAP = {
+    'c#': 'csharp',
+    'c++': 'cpp',
+    '.net': 'dotnet',
+    'node.js': 'nodejs',
+    'react.js': 'reactjs',
+    'vue.js': 'vuejs',
+    'next.js': 'nextjs',
+    'asp.net': 'aspnet',
+}
 
-download_nltk_data()
+TECH_KEYWORDS = {
+    'css', 'html', 'javascript', 'typescript', 'csharp', 'cpp', 'dotnet',
+    'sql', 'python', 'java', 'reactjs', 'reactnative', 'nodejs', 'vuejs',
+    'nextjs', 'aspnet', 'flutter', 'dart', 'spark', 'airflow', 'terraform',
+    'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'kafka', 'rabbitmq',
+    'oracle', 'mongodb', 'postgresql', 'redis', 'linux', 'git', 'api',
+    'rest', 'graphql', 'fastapi', 'django', 'spring', 'angular', 'android',
+    'ios', 'swift', 'kotlin', 'golang', 'rust', 'scala', 'hadoop',
+    'machine', 'learning', 'backend', 'frontend', 'fullstack', 'devops',
+    'cloud', 'microservices', 'agile', 'scrum',
+}
 
-def clean_text(text):
+# ---------------------------------------------------------------------------
+# NLTK setup (idempotente)
+# ---------------------------------------------------------------------------
+def _ensure_nltk():
+    resources = [
+        ('corpora/stopwords', 'stopwords'),
+        ('tokenizers/punkt_tab', 'punkt_tab'),
+        ('tokenizers/punkt', 'punkt'),
+    ]
+    for path, pkg in resources:
+        try:
+            nltk.data.find(path)
+        except LookupError:
+            nltk.download(pkg, quiet=True)
+
+_ensure_nltk()
+
+STOP_WORDS = set(stopwords.words('english')) | set(stopwords.words('portuguese'))
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+def _normalize(text: str) -> str:
+    """Remove acentos normalizando para NFD e descartando combining chars."""
+    return unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode('ascii')
+
+
+def clean_text(text: str) -> str:
     """
-    Limpa o texto utilizando NLTK.
-    Preserva linguagens e frameworks que contêm caracteres especiais (C#, C++, .NET)
-    mapeando-os para texto antes da tokenização.
+    Pipeline de limpeza de texto para PT-BR e EN:
+    1. Normaliza encoding (remove acentos de forma limpa).
+    2. Mapeia termos técnicos especiais (C#, C++, Node.js …).
+    3. Tokeniza e filtra stopwords.
+    4. Duplica termos técnicos para dar peso 2x no TF-IDF.
     """
     if not text:
         return ""
-    
-    text = text.lower().replace('\n', ' ').replace('\r', '')
-    
-    # Mapeamento de termos sensíveis ao tokenizador
-    text = text.replace('c#', 'csharp')
-    text = text.replace('c++', 'cpp')
-    text = text.replace('.net', 'dotnet')
-    text = text.replace('node.js', 'nodejs')
-    text = text.replace('react.js', 'reactjs')
-    text = text.replace('vue.js', 'vuejs')
-    
-    tokens = word_tokenize(text)
-    
-    stop_words = set(stopwords.words('english')) | set(stopwords.words('portuguese'))
-    # Permitir apenas palavras alfanuméricas
-    tokens = [t for t in tokens if t.isalnum() and t not in stop_words]
-    
-    tagged_tokens = nltk.pos_tag(tokens)
-    
-    lemmatizer = WordNetLemmatizer()
+
+    # 1. Lowercase + normalização de acentos
+    text = text.lower()
+    for original, replacement in TECH_MAP.items():
+        text = text.replace(original, replacement)
+    text = _normalize(text)
+
+    # 2. Tokenização simples (mantém apenas alfanuméricos)
+    tokens = re.findall(r'[a-z0-9]+', text)
+
+    # 3. Remove stopwords e tokens muito curtos (<=1 char)
+    tokens = [t for t in tokens if len(t) > 1 and t not in STOP_WORDS]
+
+    # 4. Boost: duplica techs + tokens longos (>=5) que provavelmente são substantivos
     final_tokens = []
-    
-    # Palavras-chave que não devem ser lematizadas para não serem destruídas (ex: css -> cs)
-    tech_keywords = {'css', 'html', 'javascript', 'csharp', 'cpp', 'dotnet', 'sql', 'python', 'java', 'react', 'nodejs'}
-    
-    for word, tag in tagged_tokens:
-        if word in tech_keywords:
-            lemma = word
-        else:
-            lemma = lemmatizer.lemmatize(word)
-        final_tokens.append(lemma)
-        
-        # Duplica termos técnicos para dar 2x peso no TF-IDF
-        if tag.startswith('NN') or word in tech_keywords:
-            final_tokens.append(lemma)
-            
+    for t in tokens:
+        final_tokens.append(t)
+        if t in TECH_KEYWORDS or len(t) >= 5:
+            final_tokens.append(t)  # peso dobrado
+
     return " ".join(final_tokens)
+
 
 if __name__ == "__main__":
     test_text = "Conhecimento intermediário em C#, C++, Node.js, CSS e Machine Learning."
