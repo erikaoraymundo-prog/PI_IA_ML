@@ -219,7 +219,7 @@ export function generateCourseSuggestions(resumeText) {
 
   if (suggestions.length === 0) {
     suggestions.push(
-      { title: 'Lógica e Fundamentos (Fundação Bradesco)', url: 'https://www.ev.org.br/cursos/logica-de-programacao', description: 'Cursos gratuitos para base técnica sólida.' },
+      { title: 'Lógica de Programação (Curso em Vídeo)', url: 'https://www.cursoemvideo.com/curso/curso-de-algoritmo/', description: 'Curso prático e gratuito para base técnica sólida.' },
       { title: 'Santander Open Academy', url: 'https://app.santanderopenacademy.com/pt-BR/program', description: 'Bolsas 100% gratuitas em tecnologia e idiomas.' }
     );
   }

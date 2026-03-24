@@ -51,9 +51,9 @@ OFFLINE_COURSES = {
 }
 
 GENERIC_FALLBACK = {
-    "title": "Lógica e Fundamentos de Programação",
-    "headline": "Construa uma base sólida na área de tecnologia.",
-    "url": "https://www.ev.org.br/cursos/logica-de-programacao"
+    "title": "Lógica de Programação (Curso em Vídeo)",
+    "headline": "Construa uma base sólida na área de tecnologia gratuitamente.",
+    "url": "https://www.cursoemvideo.com/curso/curso-de-algoritmo/"
 }
 
 
