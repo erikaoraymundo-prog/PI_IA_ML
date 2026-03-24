@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { auth, signInWithGoogle, logout, db } from './firebase';
-import { onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
+import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { calculateMatchScores, extractTextFromPDF, generateCourseSuggestions } from './matchingEngine';
 import './index.css';
@@ -22,6 +22,7 @@ function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [regData, setRegData] = useState({ fullName: '', email: '', address: '', password: '' });
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
 
 
   const fetchJobs = async () => {
@@ -55,6 +56,18 @@ function App() {
     }
   };
 
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
+      setShowLoginModal(false);
+      setLoginData({ email: '', password: '' });
+    } catch (err) {
+      console.error("Email Login Error:", err);
+      alert("Credenciais inválidas. Verifique email e senha.");
+    }
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
@@ -71,6 +84,14 @@ function App() {
       console.error("Registration Error:", err);
       alert("Falha no cadastro: " + err.message);
     }
+  };
+
+  const handleCandidateClick = () => {
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+    document.getElementById('resumeUpload').click();
   };
 
   const handleFileUpload = async (e) => {
@@ -161,7 +182,7 @@ function App() {
             A forma mais simples de enviar seu currículo ou encontrar o profissional ideal para sua empresa. Precisão técnica aliada à visão humana.
           </p>
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <button className="btn btn-primary" onClick={() => document.getElementById('resumeUpload').click()}>
+            <button className="btn btn-primary" onClick={handleCandidateClick}>
               {loading ? 'Processando...' : 'Sou Candidato'}
             </button>
             <input 
@@ -368,13 +389,27 @@ function App() {
         <div className="overlay" onClick={() => setShowLoginModal(false)}>
           <div className="modal auth-modal" onClick={e => e.stopPropagation()}>
             <h2 className="section-title" style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Entrar</h2>
+            <form onSubmit={handleEmailLogin}>
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem' }}>Email</label>
+                <input required type="email" className="form-input" value={loginData.email} onChange={e => setLoginData({...loginData, email: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+              </div>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem' }}>Senha</label>
+                <input required type="password" className="form-input" value={loginData.password} onChange={e => setLoginData({...loginData, password: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+              </div>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }}>Entrar</button>
+            </form>
+
+            <div style={{ textAlign: 'center', margin: '1rem 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>ou</div>
+            
             <button className="btn btn-google" onClick={handleGoogleLogin} style={{ width: '100%', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', background: 'white', border: '1px solid #ddd', color: '#555' }}>
                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18" alt="Google" />
                Entrar com Google
             </button>
-            <div style={{ textAlign: 'center', margin: '1rem 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>ou</div>
+            
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-              Para login com email, acesse a área de cadastro.
+              Ainda não tem conta? <a href="#" onClick={(e) => { e.preventDefault(); setShowLoginModal(false); setShowRegisterModal(true); }} style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 600 }}>Cadastre-se</a>
             </p>
             <button className="btn btn-outline" style={{ width: '100%', marginTop: '1rem' }} onClick={() => setShowLoginModal(false)}>Cancelar</button>
           </div>

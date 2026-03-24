@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.firebase_config import get_firebase_status
-from backend.routes import jobs, matching
+from backend.routes import jobs, matching, recommendations
 import os
 
 app = FastAPI(title="Resume Match API")
@@ -18,6 +18,7 @@ app.add_middleware(
 # Include routes
 app.include_router(jobs.router, prefix="/api/jobs", tags=["Jobs"])
 app.include_router(matching.router, prefix="/api/match", tags=["Matching"])
+app.include_router(recommendations.router, prefix="/api/recommend-courses", tags=["Recommendations"])
 
 @app.get("/")
 async def root():

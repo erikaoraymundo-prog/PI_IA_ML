@@ -3,6 +3,7 @@ from backend.firebase_config import get_db, get_bucket
 from ia_ml_engine.parser import extract_text
 from ia_ml_engine.matcher import calculate_match_scores_bulk
 from ia_ml_engine.nlp_processor import clean_text, TECH_KEYWORDS
+from ia_ml_engine.course_recommender import recommend_courses, identify_missing_skills
 import os
 import uuid
 
@@ -144,36 +145,29 @@ async def match_resume(file: UploadFile = File(...)):
 
         # 8. Sugestoes de cursos se nao houver matches
         suggestions = []
-        if not results:
-            content_tokens = set(clean_text(content).split()) & TECH_KEYWORDS
-
-            if content_tokens & {'reactjs', 'javascript', 'html', 'css', 'nextjs', 'vuejs', 'angular'}:
-                suggestions.extend([
-                    {"title": "Desenvolvimento Web (Rocketseat)", "url": "https://app.rocketseat.com.br/discover", "description": "Formacao 100% gratuita para Front-end e Web."},
-                    {"title": "React na Pratica (FreeCodeCamp)", "url": "https://www.freecodecamp.org/portuguese/", "description": "Aprenda React construindo projetos reais."},
-                ])
-            if content_tokens & {'python', 'sql', 'spark', 'airflow', 'machine', 'learning', 'hadoop'}:
-                suggestions.extend([
-                    {"title": "Python para Analise de Dados (DSA)", "url": "https://www.datascienceacademy.com.br/course/python-fundamentos", "description": "Introducao a Data Science e Python."},
-                    {"title": "Google Data Analytics (Coursera)", "url": "https://www.coursera.org/professional-certificates/google-data-analytics", "description": "Certificacao do Google com bolsa ou auditoria."},
-                ])
-            if content_tokens & {'csharp', 'java', 'backend', 'spring', 'dotnet', 'nodejs'}:
-                suggestions.extend([
-                    {"title": "Programacao Backend (FIAP ON)", "url": "https://on.fiap.com.br/", "description": "Cursos rapidos de desenvolvimento de software."},
-                ])
-            if content_tokens & {'flutter', 'dart', 'kotlin', 'swift', 'android', 'ios'}:
-                suggestions.extend([
-                    {"title": "Flutter & Dart - Full Course (YouTube)", "url": "https://www.youtube.com/watch?v=VPvVD8t02U8", "description": "Curso completo de Flutter gratuito."},
-                ])
-            if content_tokens & {'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform', 'devops', 'cloud'}:
-                suggestions.extend([
-                    {"title": "AWS Cloud Practitioner Essentials", "url": "https://aws.amazon.com/pt/training/learn-about/cloud-practitioner/", "description": "Fundamentos oficiais da AWS gratuitamente."},
-                ])
-            if not suggestions:
-                suggestions = [
-                    {"title": "Logica e Fundamentos (Fundacao Bradesco)", "url": "https://www.ev.org.br/cursos/logica-de-programacao", "description": "Cursos gratuitos para base tecnica solida."},
-                    {"title": "Santander Open Academy", "url": "https://app.santanderopenacademy.com/pt-BR/program", "description": "Bolsas 100% gratuitas em tecnologia e idiomas."},
-                ]
+        if not results and scored:
+            # Pegamos a vaga com maior score (que não atingiu o threshold)
+            best_miss = scored[0]
+            job_text = f"{best_miss.get('title', '')} {best_miss.get('description', '')} {best_miss.get('requirements', '')}"
+            missing_skills = identify_missing_skills(content, job_text)
+            
+            # Limita a 3 cursos recomendados
+            recommended = recommend_courses(missing_skills[:3], job_title=best_miss.get('title', ''))
+            
+            # Map para o formato esperado pelo frontend
+            for c in recommended:
+                suggestions.append({
+                    "title": c["curso_nome"],
+                    "url": c["url_acesso"],
+                    "description": c["justificativa_ia"]
+                })
+                
+        if not suggestions:
+            # Fallback hard-coded final se não conseguimos achar nenhuma skill missing
+            suggestions = [
+                {"title": "Lógica e Fundamentos (Fundação Bradesco)", "url": "https://www.ev.org.br/cursos/logica-de-programacao", "description": "Cursos gratuitos para base técnica sólida."},
+                {"title": "Santander Open Academy", "url": "https://app.santanderopenacademy.com/pt-BR/program", "description": "Bolsas 100% gratuitas em tecnologia e idiomas."},
+            ]
 
         return {
             "resume_url": resume_url,
