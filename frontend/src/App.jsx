@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { auth, signInWithGoogle, logout, db } from './firebase';
+import { auth, signInWithGoogle, logout, db, storage } from './firebase';
 import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { calculateMatchScores, extractTextFromPDF, generateCourseSuggestions } from './matchingEngine';
 import './index.css';
 import ProductPage from './pages/ProductPage';
@@ -17,6 +18,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [showMatchModal, setShowMatchModal] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
+  const [currentFile, setCurrentFile] = useState(null);
+  const [applying, setApplying] = useState(false);
   
   // Auth State
   const [user, setUser] = useState(null);
@@ -99,6 +102,7 @@ function App() {
     const file = e.target.files[0];
     if (!file) return;
 
+    setCurrentFile(file);
     setLoading(true);
     try {
       // 1. Extrai texto do PDF/DOCX no browser
@@ -142,6 +146,44 @@ function App() {
       setLoading(false);
       // Limpa o input para permitir reenvio do mesmo arquivo
       e.target.value = '';
+    }
+  };
+
+  const handleApplyToJobs = async () => {
+    if (!currentFile || !user || matches.length === 0) return;
+    setApplying(true);
+    try {
+      // 1. Upload do currículo para o Firebase Storage
+      const timestamp = new Date().getTime();
+      const filename = currentFile.name;
+      const storageRef = ref(storage, `resumes/${user.uid}_${timestamp}_${filename}`);
+      
+      const snapshot = await uploadBytes(storageRef, currentFile);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      // 2. Criar a candidatura na coleção applications do Firestore
+      for (const match of matches) {
+        const appRef = doc(collection(db, 'applications'));
+        await setDoc(appRef, {
+          userId: user.uid,
+          userEmail: user.email,
+          userFullName: user.fullName || user.displayName || 'Candidato',
+          jobId: match.job_id,
+          jobTitle: match.job_title,
+          resumeUrl: downloadURL,
+          score: match.score,
+          appliedAt: new Date()
+        });
+      }
+
+      alert("Candidatura enviada com sucesso para as vagas compatíveis!");
+      setShowMatchModal(false);
+      setCurrentFile(null);
+    } catch (err) {
+      console.error("Erro ao aplicar para vagas:", err);
+      alert("Falha ao enviar candidatura: " + err.message);
+    } finally {
+      setApplying(false);
     }
   };
 
@@ -359,6 +401,21 @@ function App() {
                     <span style={{ fontWeight: 700, color: 'var(--secondary)' }}>{match.score}%</span>
                   </div>
                 ))}
+                
+                <div style={{ marginTop: '2rem', padding: '1.5rem', background: '#f8fafa', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--border-color)' }}>
+                  <h4 style={{ marginBottom: '0.5rem', color: 'var(--text-dark)' }}>Deseja se candidatar a estas vagas?</h4>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.2rem' }}>
+                    Seu currículo será enviado diretamente para os recrutadores responsáveis de forma segura.
+                  </p>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={handleApplyToJobs} 
+                    disabled={applying}
+                    style={{ width: '100%', padding: '0.8rem' }}
+                  >
+                    {applying ? 'Enviando...' : 'Sim, Enviar Meu Currículo'}
+                  </button>
+                </div>
               </div>
             ) : (
               <div style={{ marginTop: '1.5rem' }}>
