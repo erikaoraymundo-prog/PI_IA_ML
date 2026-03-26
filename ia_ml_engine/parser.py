@@ -2,51 +2,51 @@ import fitz  # PyMuPDF
 import docx
 import os
 
-def extract_text_from_pdf(pdf_path):
+def extract_text_from_pdf(caminho_pdf):
     """
-    Extracts text from a PDF file using PyMuPDF.
-    """
-    try:
-        doc = fitz.open(pdf_path)
-        text = ""
-        for page in doc:
-            text += page.get_text()
-        return text
-    except Exception as e:
-        print(f"Error extracting PDF: {e}")
-        return ""
-
-def extract_text_from_docx(docx_path):
-    """
-    Extracts text from a DOCX file using python-docx.
+    Extrai o texto de um arquivo PDF usando PyMuPDF.
     """
     try:
-        doc = docx.Document(docx_path)
-        text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
-        return text
-    except Exception as e:
-        print(f"Error extracting DOCX: {e}")
+        documento = fitz.open(caminho_pdf)
+        texto = ""
+        for pagina in documento:
+            texto += pagina.get_text()
+        return texto
+    except Exception as erro:
+        print(f"Erro ao extrair PDF: {erro}")
         return ""
 
-def extract_text(file_path):
+def extract_text_from_docx(caminho_docx):
     """
-    Identify file type and extract text.
+    Extrai o texto de um arquivo DOCX usando python-docx.
     """
-    _, ext = os.path.splitext(file_path)
-    ext = ext.lower()
+    try:
+        documento = docx.Document(caminho_docx)
+        texto = "\n".join([paragrafo.text for paragrafo in documento.paragraphs])
+        return texto
+    except Exception as erro:
+        print(f"Erro ao extrair DOCX: {erro}")
+        return ""
+
+def extract_text(caminho_arquivo):
+    """
+    Identifica o tipo do arquivo e extrai o texto.
+    """
+    _, extensao = os.path.splitext(caminho_arquivo)
+    extensao = extensao.lower()
     
-    if ext == ".pdf":
-        return extract_text_from_pdf(file_path)
-    elif ext == ".docx":
-        return extract_text_from_docx(file_path)
+    if extensao == ".pdf":
+        return extract_text_from_pdf(caminho_arquivo)
+    elif extensao == ".docx":
+        return extract_text_from_docx(caminho_arquivo)
     else:
-        # For simplicity, treat others as plain text or unsupported
+        # Por simplicidade, trata outros formatos como texto puro ou não suportados
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                return f.read()
+            with open(caminho_arquivo, "r", encoding="utf-8") as arquivo:
+                return arquivo.read()
         except:
             return ""
 
 if __name__ == "__main__":
-    # Test script
+    # Script de teste
     pass
