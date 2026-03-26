@@ -284,7 +284,7 @@ function App() {
         <div className="container">
           <h2 className="cta-title">O futuro da sua carreira tech começa aqui.</h2>
           <p className="cta-subtitle">Junte-se a milhares de desenvolvedores e centenas de empresas inovadoras.</p>
-          <button className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem' }}>Criar Conta Grátis</button>
+          <button className="btn btn-primary" onClick={() => setShowRegisterModal(true)} style={{ padding: '1rem 3rem', fontSize: '1.1rem' }}>Criar Conta Grátis</button>
         </div>
       </section>
       </>
