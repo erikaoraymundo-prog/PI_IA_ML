@@ -6,6 +6,7 @@ import { calculateMatchScores, extractTextFromPDF, generateCourseSuggestions } f
 import './index.css';
 import ProductPage from './pages/ProductPage';
 import LGPDPage from './pages/LGPDPage';
+import AboutPage from './pages/AboutPage';
 
 const HERO_IMAGE_URL = "/hero_talent_match.png";
 
@@ -291,6 +292,7 @@ function App() {
 
       {currentPage === 'product' && <ProductPage />}
       {currentPage === 'lgpd' && <LGPDPage />}
+      {currentPage === 'about' && <AboutPage />}
 
       <footer>
         <div className="container">
