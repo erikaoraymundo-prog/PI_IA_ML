@@ -1,15 +1,11 @@
 {
   "include": [
-    "api",
     "backend",
     "ia_ml_engine"
   ],
   "executionEnvironments": [
     {
-      "root": "api",
-      "extraPaths": [
-        ".."
-      ]
+      "root": "."
     }
   ]
 }
