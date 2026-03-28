@@ -4,7 +4,8 @@
     "ia_ml_engine"
   ],
   "extraPaths": [
-    "."
+    ".",
+    "C:\\Users\\alexs\\AppData\\Roaming\\Python\\Python314\\site-packages"
   ],
   "executionEnvironments": [
     {
