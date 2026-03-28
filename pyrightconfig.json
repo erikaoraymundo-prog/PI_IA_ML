@@ -3,6 +3,9 @@
     "backend",
     "ia_ml_engine"
   ],
+  "extraPaths": [
+    "."
+  ],
   "executionEnvironments": [
     {
       "root": "."
