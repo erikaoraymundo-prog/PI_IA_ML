@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from .nlp_processor import clean_text, TECH_KEYWORDS
 
 # ---------------------------------------------------------------------------
-# Fallback Offline courses (used when Udemy API fails or returns 0 results)
+# Estepe caso a API da Udemy falhe ou retorne 0 resultados
 # ---------------------------------------------------------------------------
 OFFLINE_COURSES = {
     "reactjs": {

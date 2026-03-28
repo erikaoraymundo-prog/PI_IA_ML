@@ -4,7 +4,7 @@ from backend.firebase_config import get_firebase_status
 from backend.routes import jobs, matching, recommendations
 import os
 
-app = FastAPI(title="Resume Match API")
+app = FastAPI(title="Match API")
 
 # CORS setup
 app.add_middleware(
@@ -22,7 +22,7 @@ app.include_router(recommendations.router, prefix="/api/recommend-courses", tags
 
 @app.get("/")
 async def root():
-    return {"message": "Resume Match AI/ML API is running"}
+    return {"message": "Match AI/ML API is running"}
 
 @app.get("/api/status")
 async def status():

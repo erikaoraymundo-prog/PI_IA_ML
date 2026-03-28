@@ -50,3 +50,5 @@ def extract_text(caminho_arquivo):
 if __name__ == "__main__":
     # Script de teste
     pass
+
+# aposo parse, navegamremos ate ao arquivo 
