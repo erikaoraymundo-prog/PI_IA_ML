@@ -25,8 +25,11 @@ function App() {
   const [user, setUser] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [regData, setRegData] = useState({ fullName: '', email: '', address: '', password: '' });
+  const [regData, setRegData] = useState({ fullName: '', email: '', address: '', password: '', userType: 'candidato', cnpj: '' });
   const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [showVagaModal, setShowVagaModal] = useState(false);
+  const [vagaData, setVagaData] = useState({ titulo: '', empresa_nome: '', localizacao: '', escala_trabalho: '', requisitos_tecnicos: '', descricao: '' });
+  const [postingVaga, setPostingVaga] = useState(false);
 
 
   const fetchJobs = async () => {
@@ -72,22 +75,100 @@ function App() {
     }
   };
 
+  // ── Helpers de CNPJ ──────────────────────────────────────────────────────
+  const formatCNPJ = (value) => {
+    const digits = value.replace(/\D/g, '').slice(0, 14);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 5) return `${digits.slice(0,2)}.${digits.slice(2)}`;
+    if (digits.length <= 8) return `${digits.slice(0,2)}.${digits.slice(2,5)}.${digits.slice(5)}`;
+    if (digits.length <= 12) return `${digits.slice(0,2)}.${digits.slice(2,5)}.${digits.slice(5,8)}/${digits.slice(8)}`;
+    return `${digits.slice(0,2)}.${digits.slice(2,5)}.${digits.slice(5,8)}/${digits.slice(8,12)}-${digits.slice(12)}`;
+  };
+
+  const validateCNPJ = (cnpj) => {
+    const digits = cnpj.replace(/\D/g, '');
+    if (digits.length !== 14) return false;
+    if (/^(\d)\1+$/.test(digits)) return false;
+    let sum = 0;
+    let weight = [5,4,3,2,9,8,7,6,5,4,3,2];
+    for (let i = 0; i < 12; i++) sum += parseInt(digits[i]) * weight[i];
+    let rem = sum % 11;
+    if (parseInt(digits[12]) !== (rem < 2 ? 0 : 11 - rem)) return false;
+    sum = 0;
+    weight = [6,5,4,3,2,9,8,7,6,5,4,3,2];
+    for (let i = 0; i < 13; i++) sum += parseInt(digits[i]) * weight[i];
+    rem = sum % 11;
+    return parseInt(digits[13]) === (rem < 2 ? 0 : 11 - rem);
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (regData.userType === 'empresa') {
+      if (!validateCNPJ(regData.cnpj)) {
+        alert('CNPJ inválido. Verifique o número informado.');
+        return;
+      }
+    }
     try {
       const { user } = await createUserWithEmailAndPassword(auth, regData.email, regData.password);
-      await setDoc(doc(db, "users", user.uid), {
+      const userData = {
         fullName: regData.fullName,
         email: regData.email,
         address: regData.address,
+        userType: regData.userType,
         createdAt: new Date()
-      });
+      };
+      if (regData.userType === 'empresa') {
+        userData.cnpj = regData.cnpj.replace(/\D/g, '');
+      }
+      await setDoc(doc(db, "users", user.uid), userData);
       alert("Cadastro realizado com sucesso!");
       setShowRegisterModal(false);
+      setRegData({ fullName: '', email: '', address: '', password: '', userType: 'candidato', cnpj: '' });
     } catch (err) {
       console.error("Registration Error:", err);
       alert("Falha no cadastro: " + err.message);
     }
+  };
+
+  // ── Cadastro de Vaga ─────────────────────────────────────────────────────
+  const handlePostVaga = async (e) => {
+    e.preventDefault();
+    if (!user) { setShowLoginModal(true); return; }
+    setPostingVaga(true);
+    try {
+      const payload = {
+        titulo: vagaData.titulo,
+        empresa_nome: vagaData.empresa_nome || user.fullName || user.displayName,
+        localizacao: vagaData.localizacao,
+        escala_trabalho: vagaData.escala_trabalho,
+        requisitos_tecnicos: vagaData.requisitos_tecnicos.split(',').map(s => s.trim()).filter(Boolean),
+        descricao: vagaData.descricao,
+        fonte_tipo: 'INTERNA',
+        ativo: true,
+        postedByUid: user.uid,
+        postedByEmail: user.email,
+        data_postagem: new Date()
+      };
+      const vagasCol = collection(db, 'vagas_oportunidades');
+      await setDoc(doc(vagasCol), payload);
+      alert('Vaga cadastrada com sucesso!');
+      setShowVagaModal(false);
+      setVagaData({ titulo: '', empresa_nome: '', localizacao: '', escala_trabalho: '', requisitos_tecnicos: '', descricao: '' });
+    } catch (err) {
+      console.error('Erro ao cadastrar vaga:', err);
+      alert('Falha ao cadastrar vaga: ' + err.message);
+    } finally {
+      setPostingVaga(false);
+    }
+  };
+
+  const handleRecrutadorClick = () => {
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+    setShowVagaModal(true);
   };
 
   const handleCandidateClick = () => {
@@ -235,7 +316,7 @@ function App() {
               onChange={handleFileUpload} 
               accept=".pdf,.docx"
             />
-            <button className="btn btn-outline" style={{ background: '#e1eaec', border: 'none' }}>Sou Recrutador</button>
+            <button className="btn btn-outline" onClick={handleRecrutadorClick} style={{ background: '#e1eaec', border: 'none' }}>Sou Recrutador</button>
           </div>
         </div>
         <div className="hero-image-container">
@@ -477,28 +558,144 @@ function App() {
 
       {showRegisterModal && (
         <div className="overlay" onClick={() => setShowRegisterModal(false)}>
-          <div className="modal auth-modal" onClick={e => e.stopPropagation()}>
-            <h2 className="section-title" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Cadastrar</h2>
+          <div className="modal register-modal" onClick={e => e.stopPropagation()}>
+            <h2 className="section-title" style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Criar Conta</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>Selecione seu perfil para personalizar sua experiência</p>
+
+            {/* Toggle Tipo de Usuário */}
+            <div className="user-type-toggle">
+              <button
+                type="button"
+                className={`type-btn ${regData.userType === 'candidato' ? 'active' : ''}`}
+                onClick={() => setRegData({...regData, userType: 'candidato', cnpj: ''})}
+              >
+                <span className="type-icon">👤</span>
+                <span className="type-label">Candidato</span>
+                <span className="type-desc">Busco oportunidades</span>
+              </button>
+              <button
+                type="button"
+                className={`type-btn ${regData.userType === 'empresa' ? 'active' : ''}`}
+                onClick={() => setRegData({...regData, userType: 'empresa'})}
+              >
+                <span className="type-icon">🏢</span>
+                <span className="type-label">Empresa</span>
+                <span className="type-desc">Quero contratar</span>
+              </button>
+            </div>
+
             <form onSubmit={handleRegister}>
               <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem' }}>Nome Completo</label>
-                <input required type="text" className="form-input" value={regData.fullName} onChange={e => setRegData({...regData, fullName: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem', fontWeight: 600 }}>
+                  {regData.userType === 'empresa' ? 'Nome da Empresa' : 'Nome Completo'}
+                </label>
+                <input id="reg-fullname" required type="text" className="form-input" value={regData.fullName} onChange={e => setRegData({...regData, fullName: e.target.value})} placeholder={regData.userType === 'empresa' ? 'Razão social ou nome fantasia' : 'Seu nome completo'} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+              </div>
+
+              {/* CNPJ — aparece apenas para Empresa */}
+              {regData.userType === 'empresa' && (
+                <div style={{ marginBottom: '1rem' }} className="cnpj-field-wrapper">
+                  <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem', fontWeight: 600 }}>
+                    CNPJ <span style={{ color: 'var(--secondary)', fontSize: '0.75rem' }}>● obrigatório</span>
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      id="reg-cnpj"
+                      required
+                      type="text"
+                      className="form-input"
+                      value={regData.cnpj}
+                      onChange={e => setRegData({...regData, cnpj: formatCNPJ(e.target.value)})}
+                      placeholder="00.000.000/0000-00"
+                      maxLength={18}
+                      style={{ width: '100%', padding: '0.8rem', paddingRight: '2.5rem', borderRadius: '8px', border: `1px solid ${regData.cnpj.length === 18 ? (validateCNPJ(regData.cnpj) ? '#10b981' : '#ef4444') : '#ddd'}` }}
+                    />
+                    {regData.cnpj.length === 18 && (
+                      <span style={{ position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1rem' }}>
+                        {validateCNPJ(regData.cnpj) ? '✅' : '❌'}
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>Informe o CNPJ da sua empresa para verificação</p>
+                </div>
+              )}
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem', fontWeight: 600 }}>Email</label>
+                <input id="reg-email" required type="email" className="form-input" value={regData.email} onChange={e => setRegData({...regData, email: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
               </div>
               <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem' }}>Email</label>
-                <input required type="email" className="form-input" value={regData.email} onChange={e => setRegData({...regData, email: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem' }}>Endereço</label>
-                <input required type="text" className="form-input" value={regData.address} onChange={e => setRegData({...regData, address: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem', fontWeight: 600 }}>Endereço</label>
+                <input id="reg-address" required type="text" className="form-input" value={regData.address} onChange={e => setRegData({...regData, address: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
               </div>
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem' }}>Senha</label>
-                <input required type="password" placeholder="Mínimo 6 caracteres" className="form-input" value={regData.password} onChange={e => setRegData({...regData, password: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem', fontWeight: 600 }}>Senha</label>
+                <input id="reg-password" required type="password" placeholder="Mínimo 6 caracteres" className="form-input" value={regData.password} onChange={e => setRegData({...regData, password: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
               </div>
-              <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Criar Conta</button>
+              <button type="submit" id="btn-criar-conta" className="btn btn-primary" style={{ width: '100%', padding: '0.9rem', fontSize: '1rem' }}>Criar Conta</button>
             </form>
-            <button className="btn btn-outline" style={{ width: '100%', marginTop: '1rem' }} onClick={() => setShowRegisterModal(false)}>Cancelar</button>
+            <button className="btn btn-outline" style={{ width: '100%', marginTop: '0.75rem' }} onClick={() => setShowRegisterModal(false)}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Cadastro de Vaga */}
+      {showVagaModal && (
+        <div className="overlay" onClick={() => setShowVagaModal(false)}>
+          <div className="modal vaga-modal" onClick={e => e.stopPropagation()}>
+            <div className="vaga-modal-header">
+              <div className="vaga-modal-icon">💼</div>
+              <div>
+                <h2 className="section-title" style={{ fontSize: '1.4rem', marginBottom: '0.2rem' }}>Cadastrar Nova Vaga</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Preencha os detalhes da oportunidade</p>
+              </div>
+            </div>
+            <form onSubmit={handlePostVaga} style={{ marginTop: '1.5rem' }}>
+              <div className="vaga-form-grid">
+                <div className="vaga-form-group">
+                  <label>Título da Vaga *</label>
+                  <input id="vaga-titulo" required type="text" className="form-input" value={vagaData.titulo} onChange={e => setVagaData({...vagaData, titulo: e.target.value})} placeholder="Ex: Desenvolvedor Full Stack Sênior" />
+                </div>
+                <div className="vaga-form-group">
+                  <label>Nome da Empresa *</label>
+                  <input id="vaga-empresa" required type="text" className="form-input" value={vagaData.empresa_nome} onChange={e => setVagaData({...vagaData, empresa_nome: e.target.value})} placeholder="Nome da empresa ou razão social" />
+                </div>
+                <div className="vaga-form-group">
+                  <label>Localização *</label>
+                  <input id="vaga-localizacao" required type="text" className="form-input" value={vagaData.localizacao} onChange={e => setVagaData({...vagaData, localizacao: e.target.value})} placeholder="Ex: São Paulo, SP — ou Remoto" />
+                </div>
+                <div className="vaga-form-group">
+                  <label>Regime de Trabalho *</label>
+                  <select id="vaga-escala" required className="form-input form-select" value={vagaData.escala_trabalho} onChange={e => setVagaData({...vagaData, escala_trabalho: e.target.value})}>
+                    <option value="">Selecione...</option>
+                    <option value="remoto">🌐 Remoto</option>
+                    <option value="hibrido">🔀 Híbrido</option>
+                    <option value="5x2">🏢 Presencial 5x2</option>
+                    <option value="6x1">🏢 Presencial 6x1</option>
+                    <option value="outra">📋 Outra</option>
+                  </select>
+                </div>
+              </div>
+              <div className="vaga-form-group" style={{ marginTop: '0.5rem' }}>
+                <label>Requisitos Técnicos * <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(separados por vírgula)</span></label>
+                <input id="vaga-requisitos" required type="text" className="form-input" value={vagaData.requisitos_tecnicos} onChange={e => setVagaData({...vagaData, requisitos_tecnicos: e.target.value})} placeholder="Ex: React, Node.js, Python, SQL" />
+                {vagaData.requisitos_tecnicos && (
+                  <div className="req-tags-preview">
+                    {vagaData.requisitos_tecnicos.split(',').filter(s => s.trim()).map((req, i) => (
+                      <span key={i} className="req-tag">{req.trim()}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="vaga-form-group" style={{ marginTop: '0.5rem' }}>
+                <label>Descrição da Vaga</label>
+                <textarea id="vaga-descricao" className="form-input" rows={3} value={vagaData.descricao} onChange={e => setVagaData({...vagaData, descricao: e.target.value})} placeholder="Descreva responsabilidades, benefícios e diferenciais da posição..." style={{ resize: 'vertical', minHeight: '80px' }} />
+              </div>
+              <button id="btn-publicar-vaga" type="submit" className="btn btn-primary" disabled={postingVaga} style={{ width: '100%', padding: '0.9rem', fontSize: '1rem', marginTop: '0.5rem' }}>
+                {postingVaga ? '⏳ Publicando...' : '🚀 Publicar Vaga'}
+              </button>
+            </form>
+            <button className="btn btn-outline" style={{ width: '100%', marginTop: '0.75rem' }} onClick={() => setShowVagaModal(false)}>Cancelar</button>
           </div>
         </div>
       )}

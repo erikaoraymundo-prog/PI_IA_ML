@@ -428,6 +428,164 @@ input:focus, textarea:focus {
   color: var(--text-dark);
 }
 
+/* ── Register Modal ─────────────────────────────────────────────────── */
+.register-modal {
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* User type toggle */
+.user-type-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1rem 0.75rem;
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  background: #f8fafa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.type-btn:hover {
+  border-color: var(--primary-light);
+  background: #f0f8fa;
+}
+
+.type-btn.active {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, #e6f6f8, #d0f0f5);
+  box-shadow: 0 0 0 3px rgba(0, 77, 91, 0.1);
+}
+
+.type-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.type-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.type-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* CNPJ field */
+.cnpj-field-wrapper {
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Vaga Modal ─────────────────────────────────────────────────────── */
+.vaga-modal {
+  max-width: 620px;
+  width: 95%;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.vaga-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vaga-modal-icon {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #e6f6f8, #c3eef5);
+  border-radius: 12px;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vaga-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  .vaga-form-grid { grid-template-columns: 1fr; }
+  .vaga-modal { max-width: 95vw; }
+}
+
+.vaga-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.vaga-form-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.vaga-form-group .form-input {
+  padding: 0.72rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+
+/* Real-time requirements tags */
+.req-tags-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.req-tag {
+  background: linear-gradient(135deg, #e6f6f8, #d0eef5);
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 99px;
+  border: 1px solid rgba(0, 77, 91, 0.15);
+  animation: tagPop 0.18s ease;
+}
+
+@keyframes tagPop {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
 /* LGPD Page Styles */
 .lgpd-page {
   background: var(--bg-light);
