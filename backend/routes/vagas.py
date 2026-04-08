@@ -21,7 +21,13 @@ from pydantic import ValidationError
 
 from backend.firebase_config import get_db
 from backend.vagas_schema import FonteTipo, VagaInternaInput, VagaOportunidade
-from backend.scraper import scrape_vagas, persist_vagas_firestore, SCRAPING_TARGETS
+from backend.scraper import (
+    scrape_vagas,
+    scrape_all_sources,
+    persist_vagas_firestore,
+    persist_with_dedup,
+    SCRAPING_TARGETS,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -119,44 +125,89 @@ async def cadastrar_vaga_interna(payload: VagaInternaInput):
 
 
 # ---------------------------------------------------------------------------
-# POST /api/vagas/scraping — Dispara scraper (pode ser lento → BackgroundTasks)
+# POST /api/vagas/scraping — Endpoints de coleta unificada
 # ---------------------------------------------------------------------------
 
-@router.post("/scraping", status_code=202, summary="Dispara scraping de vagas externas")
+@router.post("/scraping", status_code=202, summary="Dispara coleta completa em background")
 async def disparar_scraping(background_tasks: BackgroundTasks):
     """
-    Inicia o processo de web scraping em background e retorna imediatamente.
-    As vagas coletadas são validadas e persistidas automaticamente no Firestore.
+    Inicia a coleta unificada (APIs públicas + HTML) em background.
+    Retorna imediatamente com 202 Accepted.
+    As vagas coletadas são salvas no Firestore com deduplicação automática.
     """
     db = _db_or_503()
 
     def _run():
-        logger.info("[Vagas/Scraping] Job iniciado em background.")
-        vagas = scrape_vagas(SCRAPING_TARGETS)
-        resultado = persist_vagas_firestore(vagas, db)
+        logger.info("[Vagas/Scraping] Job unificado iniciado em background.")
+        vagas = scrape_all_sources(include_html=True)
+        resultado = persist_with_dedup(vagas, db)
         logger.info(f"[Vagas/Scraping] Job concluído: {resultado}")
 
     background_tasks.add_task(_run)
 
     return {
-        "message": "Scraping iniciado em background. Verifique os logs para acompanhar.",
-        "targets": [t["name"] for t in SCRAPING_TARGETS],
+        "message": "Coleta unificada iniciada em background. Verifique os logs para acompanhar.",
+        "fontes": ["Remotive API", "Arbeitnow API", "We Work Remotely (HTML)"],
     }
 
 
-# ---------------------------------------------------------------------------
-# POST /api/vagas/scraping/sync — Versão síncrona (para testes/CI)
-# ---------------------------------------------------------------------------
-
-@router.post("/scraping/sync", summary="Scraping síncrono (aguarda resultado)")
-async def disparar_scraping_sync():
+@router.post("/scraping/sync", summary="Coleta síncrona completa (aguarda resultado)")
+async def disparar_scraping_sync(
+    api_only: bool = False,
+    html_only: bool = False,
+):
     """
-    Executa o scraping de forma síncrona e retorna o resultado.
-    Use apenas para testes ou quando o número de vagas for pequeno.
+    Executa a coleta de forma síncrona e retorna o resultado detalhado.
+
+    Parâmetros opcionais:
+    - **api_only** (bool): Usa apenas as APIs públicas (Remotive + Arbeitnow), sem HTML scraping.
+    - **html_only** (bool): Usa apenas o HTML scraping (We Work Remotely).
+
+    Por padrão, executa ambas as fontes.
     """
     db = _db_or_503()
-    vagas = scrape_vagas(SCRAPING_TARGETS)
-    resultado = persist_vagas_firestore(vagas, db)
+
+    if html_only:
+        vagas = scrape_vagas(SCRAPING_TARGETS)
+    elif api_only:
+        from backend.api_fetcher import fetch_all_api_jobs
+        vagas = fetch_all_api_jobs()
+    else:
+        vagas = scrape_all_sources(include_html=True)
+
+    resultado = persist_with_dedup(vagas, db)
+
+    return {
+        "vagas_coletadas":  len(vagas),
+        "salvo":           resultado["salvo"],
+        "duplicatas":      resultado["duplicatas"],
+        "erros":           resultado["erros"],
+        "modo":            "html_only" if html_only else ("api_only" if api_only else "completo"),
+        "amostras": [
+            {
+                "titulo":     v.titulo,
+                "empresa":    v.empresa_nome,
+                "localizacao": v.localizacao,
+                "requisitos": v.requisitos_tecnicos[:5],
+                "url":        v.url_origem,
+            }
+            for v in vagas[:5]
+        ],
+    }
+
+
+@router.post("/scraping/api-only", summary="Coleta rápida só via APIs públicas")
+async def disparar_api_only():
+    """
+    Coleta apenas via Remotive + Arbeitnow (sem scraping HTML).
+    Mais rápido e adequado para execuções frequentes.
+    """
+    db = _db_or_503()
+    from backend.api_fetcher import fetch_all_api_jobs
+
+    vagas = fetch_all_api_jobs()
+    resultado = persist_with_dedup(vagas, db)
+
     return {
         "vagas_coletadas": len(vagas),
         **resultado,
@@ -164,7 +215,7 @@ async def disparar_scraping_sync():
             {
                 "titulo":    v.titulo,
                 "empresa":   v.empresa_nome,
-                "requisitos": v.requisitos_tecnicos[:5],
+                "requisitos": v.requisitos_tecnicos[:4],
             }
             for v in vagas[:5]
         ],

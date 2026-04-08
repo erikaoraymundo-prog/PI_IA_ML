@@ -40,13 +40,13 @@ logger = logging.getLogger(__name__)
 
 SCRAPING_TARGETS = [
     {
-        "name": "We Work Remotely – Programming",
+        "name": "We Work Remotely – Python",
         "url": "https://weworkremotely.com/remote-jobs/search?term=python+developer",
         "parser": "wwr",
     },
     {
-        "name": "We Work Remotely – DevOps",
-        "url": "https://weworkremotely.com/remote-jobs/search?term=devops",
+        "name": "We Work Remotely – React",
+        "url": "https://weworkremotely.com/remote-jobs/search?term=react+developer",
         "parser": "wwr",
     },
 ]
@@ -266,8 +266,63 @@ def scrape_vagas(targets: list[dict] | None = None) -> list[VagaOportunidade]:
 
         time.sleep(DELAY_BETWEEN_REQ)
 
-    logger.info(f"[Scraper] Total de vagas coletadas: {len(results)}")
+    logger.info(f"[Scraper] Total de vagas coletadas via HTML: {len(results)}")
     return results
+
+
+# ---------------------------------------------------------------------------
+# Coleta unificada: APIs públicas + HTML scraping
+# ---------------------------------------------------------------------------
+
+def scrape_all_sources(
+    include_html: bool = True,
+    targets: list[dict] | None = None,
+) -> list[VagaOportunidade]:
+    """
+    Orquestra todas as fontes de dados:
+      1. APIs públicas (Remotive + Arbeitnow) via api_fetcher
+      2. Scraping HTML via SCRAPING_TARGETS (We Work Remotely)
+
+    Retorna lista unificada de VagaOportunidade sem duplicatas internas
+    (deduplicado por url_origem).
+    """
+    # Import lazy para evitar dependência circular
+    from backend.api_fetcher import fetch_all_api_jobs
+
+    all_vagas: list[VagaOportunidade] = []
+    seen_urls: set[str] = set()
+
+    # ── Fase 1: APIs públicas (mais rápido e confiável) ──
+    try:
+        api_vagas = fetch_all_api_jobs()
+        for v in api_vagas:
+            key = v.url_origem or ""
+            if key and key in seen_urls:
+                continue
+            seen_urls.add(key)
+            all_vagas.append(v)
+        logger.info(f"[Scraper/Unified] APIs: {len(api_vagas)} vagas coletadas")
+    except Exception as e:
+        logger.error(f"[Scraper/Unified] Erro nas APIs públicas: {e}")
+
+    # ── Fase 2: HTML scraping (opcional, mais lento) ──
+    if include_html:
+        try:
+            html_vagas = scrape_vagas(targets)
+            added = 0
+            for v in html_vagas:
+                key = v.url_origem or ""
+                if key and key in seen_urls:
+                    continue
+                seen_urls.add(key)
+                all_vagas.append(v)
+                added += 1
+            logger.info(f"[Scraper/Unified] HTML: {added} vagas novas adicionadas")
+        except Exception as e:
+            logger.error(f"[Scraper/Unified] Erro no HTML scraping: {e}")
+
+    logger.info(f"[Scraper/Unified] Total final: {len(all_vagas)} vagas")
+    return all_vagas
 
 
 # ---------------------------------------------------------------------------
@@ -306,3 +361,71 @@ def persist_vagas_firestore(vagas: list[VagaOportunidade], db) -> dict:
         logger.error(f"[Scraper] Erro no commit final do batch: {e}")
 
     return {"salvo": salvo, "erros": erros}
+
+
+def persist_with_dedup(vagas: list[VagaOportunidade], db) -> dict:
+    """
+    Persiste vagas evitando duplicatas no Firestore.
+    Verifica o campo `url_origem` contra documentos existentes antes de inserir.
+
+    Returns:
+        {"salvo": N, "duplicatas": D, "erros": E}
+    """
+    if not vagas:
+        return {"salvo": 0, "duplicatas": 0, "erros": 0}
+
+    COLLECTION = "vagas_oportunidades"
+    col_ref = db.collection(COLLECTION)
+
+    # Carrega URLs já existentes no Firestore (apenas url_origem)
+    logger.info("[Scraper/Dedup] Carregando URLs existentes do Firestore...")
+    existing_urls: set[str] = set()
+    try:
+        docs = col_ref.select(["url_origem"]).stream()
+        for d in docs:
+            url = d.to_dict().get("url_origem", "")
+            if url:
+                existing_urls.add(url)
+        logger.info(f"[Scraper/Dedup] {len(existing_urls)} URLs já cadastradas")
+    except Exception as e:
+        logger.warning(f"[Scraper/Dedup] Não foi possível carregar URLs existentes: {e}")
+
+    salvo = 0
+    duplicatas = 0
+    erros = 0
+
+    batch = db.batch()
+    batch_count = 0
+
+    for vaga in vagas:
+        url_key = vaga.url_origem or ""
+
+        if url_key and url_key in existing_urls:
+            duplicatas += 1
+            logger.debug(f"[Scraper/Dedup] Duplicata ignorada: {vaga.titulo}")
+            continue
+
+        try:
+            doc_ref = col_ref.document()
+            batch.set(doc_ref, vaga.to_firestore())
+            if url_key:
+                existing_urls.add(url_key)  # evita duplicata dentro do mesmo batch
+            salvo += 1
+            batch_count += 1
+
+            if batch_count >= 490:
+                batch.commit()
+                batch = db.batch()
+                batch_count = 0
+        except Exception as e:
+            logger.error(f"[Scraper/Dedup] Erro ao preparar vaga '{vaga.titulo}': {e}")
+            erros += 1
+
+    if batch_count > 0:
+        try:
+            batch.commit()
+        except Exception as e:
+            logger.error(f"[Scraper/Dedup] Erro no commit final: {e}")
+
+    logger.info(f"[Scraper/Dedup] salvo={salvo}, duplicatas={duplicatas}, erros={erros}")
+    return {"salvo": salvo, "duplicatas": duplicatas, "erros": erros}
