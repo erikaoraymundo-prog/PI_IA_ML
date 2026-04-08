@@ -10,3 +10,6 @@ python-docx
 nltk
 pydantic
 python-dotenv
+requests
+beautifulsoup4
+lxml
