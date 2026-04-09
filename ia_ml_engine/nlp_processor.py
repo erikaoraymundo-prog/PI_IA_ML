@@ -93,3 +93,5 @@ def clean_text(text: str) -> str:
 if __name__ == "__main__":
     test_text = "Conhecimento intermediário em C#, C++, Node.js, CSS e Machine Learning."
     print(clean_text(test_text))
+
+# apos a normalização, navegaremos ate ao arquivo model.py para a vetorização
