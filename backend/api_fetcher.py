@@ -22,6 +22,8 @@ from typing import List
 
 import requests
 from requests.exceptions import SSLError
+import nltk
+from nltk.corpus import stopwords
 
 from backend.vagas_schema import VagaOportunidade, FonteTipo
 
@@ -133,6 +135,55 @@ def _extract_requisitos(text: str) -> list[str]:
     return requisitos[:25]
 
 
+# ---------------------------------------------------------------------------
+# Language Detection
+# ---------------------------------------------------------------------------
+
+def _ensure_nltk_resources():
+    """Garante que os recursos do NLTK necessários para filtragem de idioma estão disponíveis."""
+    resources = ['corpora/stopwords', 'tokenizers/punkt']
+    for res in resources:
+        try:
+            nltk.data.find(res)
+        except LookupError:
+            pkg = res.split('/')[-1]
+            nltk.download(pkg, quiet=True)
+
+_ensure_nltk_resources()
+
+def _is_en_or_pt(text: str) -> bool:
+    """
+    Detecta se o texto está predominantemente em Inglês ou Português.
+    Usa contagem de stopwords para eficiência.
+    """
+    if not text:
+        return False
+    
+    _ensure_nltk_resources()
+    
+    # Tokenização simplificada em lowercase
+    words = set(re.findall(r'\b[a-z]{2,}\b', text.lower()))
+    if not words:
+        return False
+    
+    # Carrega stop words das línguas alvo e da indesejada (alemão)
+    stop_en = set(stopwords.words('english'))
+    stop_pt = set(stopwords.words('portuguese'))
+    stop_de = set(stopwords.words('german'))
+    
+    score_en = len(words.intersection(stop_en))
+    score_pt = len(words.intersection(stop_pt))
+    score_de = len(words.intersection(stop_de))
+    
+    # Se o texto for predominantemente alemão, descarta
+    if score_de > score_en and score_de > score_pt:
+        return False
+    
+    # Exige um mínimo de stop words para confirmar que o texto é legível/idiomático
+    # em PT ou EN, evitando textos excessivamente curtos ou só com código/lixo.
+    return (score_en > 0 or score_pt > 0)
+
+
 # Títulos que claramente NÃO são dev (exclui falsos positivos do filtro amplo)
 _EXCLUDE_TITLE_KEYWORDS = {
     "writer", "copywriter", "editor", "translator", "account manager",
@@ -194,6 +245,11 @@ def _normalize_to_vaga(raw: dict, source_name: str) -> VagaOportunidade | None:
     requisitos = _extract_requisitos(descricao)
     if not requisitos:
         logger.debug(f"[ApiFetcher] Vaga descartada (sem requisitos): {titulo}")
+        return None
+
+    # NOVO: Filtro de Idioma (Somente PT e EN)
+    if not _is_en_or_pt(descricao):
+        logger.info(f"[ApiFetcher] Vaga descartada (idioma não suportado): {titulo}")
         return None
 
     try:
