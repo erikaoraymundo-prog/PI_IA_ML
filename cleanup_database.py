@@ -24,7 +24,7 @@ def main():
         return
     print("[OK] Conectado!")
 
-    collection_name = "jobs"
+    collection_name = "vagas_oportunidades"
     print(f"\n2. Analisando documentos na coleção '{collection_name}'...")
     
     try:

@@ -17,7 +17,7 @@ async def get_jobs():
         db = get_db()
         if not db:
             return []
-        jobs_ref = db.collection('jobs')
+        jobs_ref = db.collection('vagas_oportunidades')
         docs = jobs_ref.stream()
         jobs = []
         for doc in docs:
@@ -36,7 +36,7 @@ async def create_job(job: Job):
         db = get_db()
         if not db:
             raise HTTPException(status_code=503, detail="Firestore indisponível.")
-        new_job_ref = db.collection('jobs').document()
+        new_job_ref = db.collection('vagas_oportunidades').document()
         new_job_ref.set({
             'title': job.title,
             'description': job.description,

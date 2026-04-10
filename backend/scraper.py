@@ -337,7 +337,7 @@ def persist_vagas_firestore(vagas: list[VagaOportunidade], db) -> dict:
     Returns:
         {"salvo": N, "erros": M}
     """
-    collection = db.collection("jobs")
+    collection = db.collection("vagas_oportunidades")
     salvo = 0
     erros = 0
 
@@ -374,7 +374,7 @@ def persist_with_dedup(vagas: list[VagaOportunidade], db) -> dict:
     if not vagas:
         return {"salvo": 0, "duplicatas": 0, "erros": 0}
 
-    COLLECTION = "jobs"
+    COLLECTION = "vagas_oportunidades"
     col_ref = db.collection(COLLECTION)
 
     # Carrega URLs já existentes no Firestore (apenas url_origem)

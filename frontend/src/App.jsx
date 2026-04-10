@@ -34,7 +34,7 @@ function App() {
 
   const fetchJobs = async () => {
     try {
-      const snap = await getDocs(collection(db, 'jobs'));
+      const snap = await getDocs(collection(db, 'vagas_oportunidades'));
       setJobs(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     } catch (err) {
       console.error('Error fetching jobs:', err);
@@ -150,7 +150,7 @@ function App() {
         postedByEmail: user.email,
         data_postagem: new Date()
       };
-      const vagasCol = collection(db, 'jobs');
+      const vagasCol = collection(db, 'vagas_oportunidades');
       await setDoc(doc(vagasCol), payload);
       alert('Vaga cadastrada com sucesso!');
       setShowVagaModal(false);
@@ -201,7 +201,7 @@ function App() {
       }
 
       // 2. Busca vagas do Firestore diretamente via SDK cliente
-      const jobsSnap = await getDocs(collection(db, 'jobs'));
+      const jobsSnap = await getDocs(collection(db, 'vagas_oportunidades'));
       const jobs = jobsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
       if (jobs.length === 0) {

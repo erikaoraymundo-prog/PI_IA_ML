@@ -89,7 +89,7 @@ async def match_resume(file: UploadFile = File(...)):
         try:
             db = get_db()
             if db:
-                jobs_ref = db.collection('jobs')
+                jobs_ref = db.collection('vagas_oportunidades')
                 internal_jobs_snapshot = jobs_ref.stream()
                 for doc in internal_jobs_snapshot:
                     job_data = doc.to_dict()

@@ -32,7 +32,7 @@ from backend.scraper import (
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-COLLECTION = "jobs"
+COLLECTION = "vagas_oportunidades"
 
 
 # ---------------------------------------------------------------------------
