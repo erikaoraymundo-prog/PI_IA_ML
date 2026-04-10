@@ -149,7 +149,13 @@ export function calculateMatchScores(resumeText, jobs) {
   return jobs.map((job, i) => {
     const jobTF = buildTF(jobTokensList[i]);
     const jobVec = tfidfVector(jobTF, idf);
-    const score = Math.round(cosineSimilarity(resumeVec, jobVec) * 10000) / 100;
+    let base_score = Math.round(cosineSimilarity(resumeVec, jobVec) * 10000) / 100;
+
+    const isInterna = (job.fonte_tipo === "INTERNA" || job.source === "Interna");
+    let score = isInterna ? Math.min(base_score * 1.2, 100.0) : base_score;
+    // Format to 2 decimal places
+    score = Math.round(score * 100) / 100;
+
     return {
       job_id: job.id || job.job_id,
       job_title: job.titulo || job.title || 'Vaga sem Título',
