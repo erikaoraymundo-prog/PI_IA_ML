@@ -331,13 +331,13 @@ def scrape_all_sources(
 
 def persist_vagas_firestore(vagas: list[VagaOportunidade], db) -> dict:
     """
-    Persiste uma lista de VagaOportunidade na coleção `vagas_oportunidades`
+    Persiste uma lista de VagaOportunidade na coleção `jobs`
     do Firestore. Usa batch para eficiência.
 
     Returns:
         {"salvo": N, "erros": M}
     """
-    collection = db.collection("vagas_oportunidades")
+    collection = db.collection("jobs")
     salvo = 0
     erros = 0
 
@@ -374,7 +374,7 @@ def persist_with_dedup(vagas: list[VagaOportunidade], db) -> dict:
     if not vagas:
         return {"salvo": 0, "duplicatas": 0, "erros": 0}
 
-    COLLECTION = "vagas_oportunidades"
+    COLLECTION = "jobs"
     col_ref = db.collection(COLLECTION)
 
     # Carrega URLs já existentes no Firestore (apenas url_origem)

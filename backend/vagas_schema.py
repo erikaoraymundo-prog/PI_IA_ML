@@ -1,7 +1,7 @@
 """
 vagas_schema.py
 ---------------
-Schema Pydantic para a coleção `vagas_oportunidades` no Firestore.
+Schema Pydantic para a coleção `jobs` no Firestore.
 Implementa validação em tempo de request (substitui triggers do lado do servidor
 para o ambiente Python/FastAPI) e serialização/desserialização consistente.
 """
@@ -43,7 +43,7 @@ class EscalaTrabalho(str, Enum):
 
 class VagaOportunidade(BaseModel):
     """
-    Representa um documento na coleção `vagas_oportunidades`.
+    Representa um documento na coleção `jobs`.
 
     Campos obrigatórios para INTERNA e SCRAPING:
      - empresa_nome

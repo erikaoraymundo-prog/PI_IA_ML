@@ -4,10 +4,10 @@ matcher.py
 Motor de matching entre currículo e vagas usando TF-IDF + Cosine Similarity.
 
 Novidades (Protocolo Híbrido):
-  - Suporta `requisitos_tecnicos` como lista (schema vagas_oportunidades) ou string legacy.
+  - Suporta `requisitos_tecnicos` como lista (schema jobs) ou string legacy.
   - Aplica multiplicador w = 1.2 para vagas com fonte_tipo = "INTERNA" no cálculo
     de relevância, priorizando vagas cadastradas internamente.
-  - Expõe `calculate_match_vagas_oportunidades` como ponto de entrada principal
+  - Expõe `calculate_match_jobs` como ponto de entrada principal
     para o novo schema híbrido.
 """
 
@@ -29,7 +29,7 @@ def _requisitos_to_str(requisitos) -> str:
     """
     Normaliza o campo requisitos_tecnicos para string.
     Aceita:
-      - list[str]   → junta com espaço (schema vagas_oportunidades)
+      - list[str]   → junta com espaço (schema jobs)
       - str         → usa diretamente (schema legado)
       - None / ""   → string vazia
     """
@@ -62,16 +62,16 @@ def _build_job_text(job: dict) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Função principal — nova API (vagas_oportunidades)
+# Função principal — nova API (jobs)
 # ---------------------------------------------------------------------------
 
-def calculate_match_vagas_oportunidades(
+def calculate_match_jobs(
     resume_text: str,
     vagas: list[dict],
 ) -> list[dict]:
     """
     Calcula o score de compatibilidade entre um currículo e uma lista de vagas
-    do schema `vagas_oportunidades` (Protocolo Híbrido).
+    do schema `jobs` (Protocolo Híbrido).
 
     Regras de pontuação:
       - Base: cosine similarity TF-IDF × 100
@@ -79,7 +79,7 @@ def calculate_match_vagas_oportunidades(
 
     Args:
         resume_text: Texto bruto ou parseado do currículo.
-        vagas: Lista de dicts com campos do schema vagas_oportunidades.
+        vagas: Lista de dicts com campos do schema jobs.
                Campos mínimos: empresa_nome, requisitos_tecnicos, fonte_tipo.
 
     Returns:
@@ -226,8 +226,8 @@ if __name__ == "__main__":
         },
     ]
 
-    print("=== Matching Híbrido (vagas_oportunidades) ===")
-    for r in calculate_match_vagas_oportunidades(resume, vagas_demo):
+    print("=== Matching Híbrido (jobs) ===")
+    for r in calculate_match_jobs(resume, vagas_demo):
         peso = "✓ (w=1.2)" if r["fonte_peso_aplicado"] else ""
         print(f"  [{r['fonte_tipo']}] {r['titulo']}: {r['score']}% (base={r['score_base']}%) {peso}")
 

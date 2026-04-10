@@ -150,7 +150,7 @@ function App() {
         postedByEmail: user.email,
         data_postagem: new Date()
       };
-      const vagasCol = collection(db, 'vagas_oportunidades');
+      const vagasCol = collection(db, 'jobs');
       await setDoc(doc(vagasCol), payload);
       alert('Vaga cadastrada com sucesso!');
       setShowVagaModal(false);

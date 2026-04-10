@@ -1,7 +1,7 @@
 """
 backend/routes/vagas.py
 ------------------------
-Router FastAPI para o módulo de vagas_oportunidades.
+Router FastAPI para o módulo de jobs.
 
 Endpoints:
   GET    /api/vagas/              → Lista todas as vagas ativas
@@ -32,7 +32,7 @@ from backend.scraper import (
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-COLLECTION = "vagas_oportunidades"
+COLLECTION = "jobs"
 
 
 # ---------------------------------------------------------------------------
@@ -65,7 +65,7 @@ async def listar_vagas(
     empresa: Optional[str] = Query(None, description="Filtrar por nome de empresa (parcial)"),
 ):
     """
-    Retorna todas as vagas da coleção `vagas_oportunidades` com ativo=True.
+    Retorna todas as vagas da coleção `jobs` com ativo=True.
     Suporta filtros opcionais por fonte_tipo e empresa_nome.
     """
     db = _db_or_503()
