@@ -131,9 +131,13 @@ export function calculateMatchScores(resumeText, jobs) {
   if (!resumeText || !jobs.length) return [];
 
   const resumeTokens = buildBoostedTokens(resumeText);
-  const jobTokensList = jobs.map(j =>
-    buildBoostedTokens(`${j.title} ${j.title} ${j.description || ''} ${j.requirements || ''}`)
-  );
+  const jobTokensList = jobs.map(j => {
+    const t = j.titulo || j.title || '';
+    const d = j.descricao || j.description || '';
+    let r = j.requisitos_tecnicos || j.requirements || '';
+    if (Array.isArray(r)) r = r.join(' ');
+    return buildBoostedTokens(`${t} ${t} ${d} ${r}`);
+  });
 
   // Corpus completo = currículo + todas as vagas (IDF real)
   const corpus = [resumeTokens, ...jobTokensList];
@@ -148,10 +152,10 @@ export function calculateMatchScores(resumeText, jobs) {
     const score = Math.round(cosineSimilarity(resumeVec, jobVec) * 10000) / 100;
     return {
       job_id: job.id || job.job_id,
-      job_title: job.title,
+      job_title: job.titulo || job.title || 'Vaga sem Título',
       score,
-      source: job.source || 'Interna',
-      url: job.url || '',
+      source: job.fonte_tipo || job.source || 'Interna',
+      url: job.url_origem || job.url || '',
     };
   }).sort((a, b) => b.score - a.score);
 }
