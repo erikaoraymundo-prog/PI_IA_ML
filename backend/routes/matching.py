@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from backend.firebase_config import get_db, get_bucket
 from ia_ml_engine.parser import extract_text
-from ia_ml_engine.matcher import calculate_match_scores_bulk
+from ia_ml_engine.matcher import calculate_match_jobs
 from ia_ml_engine.nlp_processor import clean_text, TECH_KEYWORDS
 from ia_ml_engine.course_recommender import recommend_courses, identify_missing_skills
 import os
@@ -95,6 +95,7 @@ async def match_resume(file: UploadFile = File(...)):
                     job_data = doc.to_dict()
                     job_data['job_id'] = doc.id
                     job_data['source'] = 'Interna'
+                    job_data['fonte_tipo'] = job_data.get('fonte_tipo', 'INTERNA')
                     job_data['url'] = ''
                     all_jobs.append(job_data)
                 print(f"[MATCH] {len(all_jobs)} vagas internas carregadas do Firestore.")
@@ -125,18 +126,18 @@ async def match_resume(file: UploadFile = File(...)):
         temp_path = None
 
         # 6. Matching bulk
-        scored = calculate_match_scores_bulk(content, all_jobs)
-        print(f"[MATCH] Scores: {[(r.get('title','?'), r['score']) for r in scored]}")
+        scored = calculate_match_jobs(content, all_jobs)
+        print(f"[MATCH] Scores: {[(r.get('titulo') or r.get('title','?'), r['score']) for r in scored]}")
 
         # 7. Filtra e ordena — threshold de 8%
         THRESHOLD = 8.0
         results = [
             {
-                'job_id': r.get('job_id'),
-                'job_title': r.get('title'),
+                'job_id': r.get('job_id') or r.get('id'),
+                'job_title': r.get('titulo') or r.get('title'),
                 'score': r['score'],
-                'source': r.get('source'),
-                'url': r.get('url', ''),
+                'source': r.get('fonte_tipo') or r.get('source'),
+                'url': r.get('url_vaga') or r.get('url', ''),
             }
             for r in scored if r['score'] >= THRESHOLD
         ]
@@ -148,11 +149,18 @@ async def match_resume(file: UploadFile = File(...)):
         if not results and scored:
             # Pegamos a vaga com maior score (que não atingiu o threshold)
             best_miss = scored[0]
-            job_text = f"{best_miss.get('title', '')} {best_miss.get('description', '')} {best_miss.get('requirements', '')}"
+            
+            titulo = best_miss.get('titulo') or best_miss.get('title', '')
+            descricao = best_miss.get('descricao') or best_miss.get('description', '')
+            requisitos = best_miss.get('requisitos_tecnicos') or best_miss.get('requirements', '')
+            if isinstance(requisitos, list):
+                requisitos = " ".join([str(req) for req in requisitos])
+                
+            job_text = f"{titulo} {descricao} {requisitos}"
             missing_skills = identify_missing_skills(content, job_text)
             
             # Limita a 3 cursos recomendados
-            recommended = recommend_courses(missing_skills[:3], job_title=best_miss.get('title', ''))
+            recommended = recommend_courses(missing_skills[:3], job_title=titulo)
             
             # Map para o formato esperado pelo frontend
             for c in recommended:
