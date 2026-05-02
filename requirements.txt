@@ -13,3 +13,8 @@ python-dotenv
 requests
 beautifulsoup4
 lxml
+langchain
+langchain-google-genai
+langchain-community
+langgraph
+tavily-python
