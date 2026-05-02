@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from backend.firebase_config import get_db
+import concurrent.futures
 
 router = APIRouter()
 
@@ -40,17 +41,16 @@ MOCK_SOCIAL_DATA = {
 }
 
 @router.get("/economic")
-async def get_economic_impact():
+def get_economic_impact():
     """
-    Tenta buscar dados reais de Vagas do Firebase. 
-    Se não houver suficientes, retorna Mock Data realista para demonstração.
+    Tenta buscar dados reais de Vagas do Firebase com timeout de 3 segundos.
+    Se falhar ou demorar, retorna Mock Data realista para demonstração.
     """
     db = get_db()
     if not db:
         return MOCK_ECONOMIC_DATA
         
-    try:
-        # Busca amostras de vagas
+    def fetch_firebase():
         jobs_ref = db.collection('jobs').limit(100).stream()
         remote_count = 0
         presencial_count = 0
@@ -59,17 +59,19 @@ async def get_economic_impact():
         for job in jobs_ref:
             data = job.to_dict()
             total_jobs += 1
-            # Verifica se a vaga é remota
             is_remote = data.get('isRemote', False) or data.get('remote_allowed', False)
             location = data.get('location', '').lower()
             if is_remote or 'remoto' in location or 'remote' in location:
                 remote_count += 1
             else:
                 presencial_count += 1
-                
-        # Se tivermos mais de 10 vagas reais no banco, usamos os dados reais do Firebase
-        # para a distribuição de vagas, mesclando com o salário padrão (já que salário
-        # global pode não estar tão bem preenchido nas vagas reais iniciais)
+        return total_jobs, remote_count, presencial_count
+
+    try:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(fetch_firebase)
+            total_jobs, remote_count, presencial_count = future.result(timeout=3.0)
+            
         if total_jobs > 10:
             result = MOCK_ECONOMIC_DATA.copy()
             result["remote_dist"] = [
@@ -79,22 +81,23 @@ async def get_economic_impact():
             return result
             
         return MOCK_ECONOMIC_DATA
+    except concurrent.futures.TimeoutError:
+        print("Timeout ao buscar dados no Firebase. Retornando Mock Data.")
+        return MOCK_ECONOMIC_DATA
     except Exception as e:
         print(f"Erro ao buscar economic data no firebase: {e}")
         return MOCK_ECONOMIC_DATA
 
 @router.get("/social")
-async def get_social_impact():
+def get_social_impact():
     """
-    Tenta buscar dados de Currículos/Usuários do Firebase.
-    Se não houver, usa Mock Data.
+    Tenta buscar dados de Currículos/Usuários do Firebase com timeout de 3 segundos.
     """
     db = get_db()
     if not db:
         return MOCK_SOCIAL_DATA
         
-    try:
-        # Buscando usuários ou currículos para extrair skills
+    def fetch_users():
         users_ref = db.collection('users').limit(50).stream()
         skills_counter = {}
         total_users = 0
@@ -109,7 +112,13 @@ async def get_social_impact():
             for skill in skills:
                 if skill:
                     skills_counter[skill] = skills_counter.get(skill, 0) + 1
-                    
+        return total_users, skills_counter
+
+    try:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(fetch_users)
+            total_users, skills_counter = future.result(timeout=3.0)
+            
         if total_users > 5 and skills_counter:
             sorted_skills = sorted(skills_counter.items(), key=lambda x: x[1], reverse=True)[:15]
             return {
@@ -117,6 +126,10 @@ async def get_social_impact():
             }
             
         return MOCK_SOCIAL_DATA
+    except concurrent.futures.TimeoutError:
+        print("Timeout ao buscar dados sociais no Firebase. Retornando Mock Data.")
+        return MOCK_SOCIAL_DATA
     except Exception as e:
         print(f"Erro ao buscar social data no firebase: {e}")
         return MOCK_SOCIAL_DATA
+
