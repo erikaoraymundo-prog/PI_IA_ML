@@ -46,12 +46,19 @@ def get_economic_impact():
     Tenta buscar dados reais de Vagas do Firebase com timeout de 3 segundos.
     Se falhar ou demorar, retorna Mock Data realista para demonstração.
     """
-    db = get_db()
-    if not db:
+    import os
+    if os.getenv("USE_FIREBASE_DASHBOARD", "false").lower() != "true":
         return MOCK_ECONOMIC_DATA
         
     def fetch_firebase():
+        print("Buscando DB...")
+        db = get_db()
+        print("DB:", db)
+        if not db:
+            raise Exception("No DB")
+        print("Pegando jobs...")
         jobs_ref = db.collection('jobs').limit(100).stream()
+        print("Iterando...")
         remote_count = 0
         presencial_count = 0
         total_jobs = 0
@@ -68,10 +75,11 @@ def get_economic_impact():
         return total_jobs, remote_count, presencial_count
 
     try:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(fetch_firebase)
-            total_jobs, remote_count, presencial_count = future.result(timeout=3.0)
-            
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        future = executor.submit(fetch_firebase)
+        total_jobs, remote_count, presencial_count = future.result(timeout=3.0)
+        executor.shutdown(wait=False)
+        
         if total_jobs > 10:
             result = MOCK_ECONOMIC_DATA.copy()
             result["remote_dist"] = [
@@ -83,9 +91,11 @@ def get_economic_impact():
         return MOCK_ECONOMIC_DATA
     except concurrent.futures.TimeoutError:
         print("Timeout ao buscar dados no Firebase. Retornando Mock Data.")
+        executor.shutdown(wait=False)
         return MOCK_ECONOMIC_DATA
     except Exception as e:
         print(f"Erro ao buscar economic data no firebase: {e}")
+        executor.shutdown(wait=False)
         return MOCK_ECONOMIC_DATA
 
 @router.get("/social")
@@ -93,11 +103,14 @@ def get_social_impact():
     """
     Tenta buscar dados de Currículos/Usuários do Firebase com timeout de 3 segundos.
     """
-    db = get_db()
-    if not db:
+    import os
+    if os.getenv("USE_FIREBASE_DASHBOARD", "false").lower() != "true":
         return MOCK_SOCIAL_DATA
         
     def fetch_users():
+        db = get_db()
+        if not db:
+            raise Exception("No DB")
         users_ref = db.collection('users').limit(50).stream()
         skills_counter = {}
         total_users = 0
@@ -115,10 +128,11 @@ def get_social_impact():
         return total_users, skills_counter
 
     try:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(fetch_users)
-            total_users, skills_counter = future.result(timeout=3.0)
-            
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        future = executor.submit(fetch_users)
+        total_users, skills_counter = future.result(timeout=3.0)
+        executor.shutdown(wait=False)
+        
         if total_users > 5 and skills_counter:
             sorted_skills = sorted(skills_counter.items(), key=lambda x: x[1], reverse=True)[:15]
             return {
@@ -128,8 +142,10 @@ def get_social_impact():
         return MOCK_SOCIAL_DATA
     except concurrent.futures.TimeoutError:
         print("Timeout ao buscar dados sociais no Firebase. Retornando Mock Data.")
+        executor.shutdown(wait=False)
         return MOCK_SOCIAL_DATA
     except Exception as e:
         print(f"Erro ao buscar social data no firebase: {e}")
+        executor.shutdown(wait=False)
         return MOCK_SOCIAL_DATA
 

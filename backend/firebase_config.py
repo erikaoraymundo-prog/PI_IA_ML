@@ -74,8 +74,6 @@ def get_firebase_status():
     }
 
 
-# Inicializa na importação (não bloqueia o startup se falhar)
-_initialize()
 
 # Aliases para compatibilidade com código legado
 db = _db
