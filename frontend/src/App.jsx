@@ -419,7 +419,7 @@ function App() {
 
       {currentPage === 'product' && <ProductPage />}
       {currentPage === 'dashboard' && <InteractiveDashboard />}
-      {currentPage === 'agent' && <AgentePage />}
+      {currentPage === 'agent' && <AgentePage user={user} onLoginRequired={() => setShowLoginModal(true)} />}
       {currentPage === 'lgpd' && <LGPDPage />}
       {currentPage === 'about' && <AboutPage />}
 

@@ -29,7 +29,7 @@ const validateCPF = (cpf) => {
   return rem === parseInt(digits[10]);
 };
 
-const AgentePage = () => {
+const AgentePage = ({ user, onLoginRequired }) => {
   const [formData, setFormData] = useState({
     candidate_name: '',
     cpf: '',
@@ -40,6 +40,38 @@ const AgentePage = () => {
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState(null);
   const [errors, setErrors] = useState(null);
+
+  // Parede de login — idêntica ao padrão do currículo
+  if (!user) {
+    return (
+      <div className="container" style={{ padding: '4rem 2rem', minHeight: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{
+          background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+          padding: '3rem',
+          borderRadius: '24px',
+          color: 'white',
+          maxWidth: '500px',
+          width: '100%',
+          textAlign: 'center',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
+        }}>
+          <div style={{ fontSize: '3.5rem', marginBottom: '1.5rem' }}>🔒</div>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '1rem' }}>Acesso Restrito</h2>
+          <p style={{ opacity: 0.85, fontSize: '1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
+            A verificação jurídica de candidatos é uma funcionalidade exclusiva para usuários autenticados.
+            Faça login para acessar o AGENTE-RECRUTER.
+          </p>
+          <button
+            className="btn btn-primary"
+            onClick={onLoginRequired}
+            style={{ padding: '0.9rem 2.5rem', fontSize: '1rem', background: '#00a896', border: 'none', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', width: '100%' }}
+          >
+            Entrar para Continuar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
