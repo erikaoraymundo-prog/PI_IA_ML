@@ -59,7 +59,7 @@ const AgentePage = ({ user, onLoginRequired }) => {
           <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '1rem' }}>Acesso Restrito</h2>
           <p style={{ opacity: 0.85, fontSize: '1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
             A verificação jurídica de candidatos é uma funcionalidade exclusiva para usuários autenticados.
-            Faça login para acessar o AGENTE-RECRUTER.
+            Faça login para acessar o AGENTE-RECRUITER.
           </p>
           <button
             className="btn btn-primary"
@@ -132,7 +132,7 @@ const AgentePage = ({ user, onLoginRequired }) => {
         overflow: 'hidden'
       }}>
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem' }}>🛡️ AGENTE-RECRUTER</h1>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem' }}>🛡️ AGENTE-RECRUITER</h1>
           <p style={{ fontSize: '1.1rem', opacity: 0.9, maxWidth: '700px', lineHeight: 1.6 }}>
             Verificação de Background, Antecedentes e Portfólio utilizando Inteligência Artificial em conformidade com a LGPD.
           </p>
