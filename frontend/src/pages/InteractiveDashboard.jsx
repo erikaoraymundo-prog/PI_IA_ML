@@ -6,6 +6,42 @@ import {
 
 const COLORS = ['#00a896', '#004d5b', '#6366f1', '#8b5cf6', '#ec4899'];
 
+// Dados estáticos de demonstração (espelho do MOCK no backend)
+const MOCK_ECONOMIC_DATA = {
+  median_br: 18000,
+  median_usa: 110000,
+  upside: 511,
+  salaries_dist: [
+    { Country: "Brasil", Salario: 12000 },
+    { Country: "Brasil", Salario: 18000 },
+    { Country: "Brasil", Salario: 24000 },
+    { Country: "EUA", Salario: 80000 },
+    { Country: "EUA", Salario: 110000 },
+    { Country: "EUA", Salario: 150000 },
+    { Country: "Alemanha", Salario: 60000 },
+    { Country: "Alemanha", Salario: 75000 },
+  ],
+  remote_dist: [
+    { name: "Remoto", value: 350 },
+    { name: "Presencial", value: 150 }
+  ]
+};
+
+const MOCK_SOCIAL_DATA = {
+  top_skills: [
+    { name: "Python", count: 240 },
+    { name: "React", count: 195 },
+    { name: "Node.js", count: 180 },
+    { name: "SQL", count: 150 },
+    { name: "AWS", count: 130 },
+    { name: "Docker", count: 110 },
+    { name: "TypeScript", count: 105 },
+    { name: "FastAPI", count: 80 },
+    { name: "Figma", count: 65 },
+    { name: "Machine Learning", count: 55 },
+  ]
+};
+
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
@@ -27,6 +63,8 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+const BACKEND_URL = import.meta.env.VITE_API_URL || '';
+
 const InteractiveDashboard = () => {
   const [activeTab, setActiveTab] = useState('economic');
   const [ecoData, setEcoData] = useState(null);
@@ -37,18 +75,26 @@ const InteractiveDashboard = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [ecoRes, socialRes] = await Promise.all([
-          fetch('http://localhost:8000/api/dashboard/economic'),
-          fetch('http://localhost:8000/api/dashboard/social')
-        ]);
-        const eco = await ecoRes.json();
-        const social = await socialRes.json();
-        setEcoData(eco);
-        setSocialData(social);
+        if (BACKEND_URL) {
+          const [ecoRes, socialRes] = await Promise.all([
+            fetch(`${BACKEND_URL}/api/dashboard/economic`),
+            fetch(`${BACKEND_URL}/api/dashboard/social`)
+          ]);
+          if (ecoRes.ok && socialRes.ok) {
+            const eco = await ecoRes.json();
+            const social = await socialRes.json();
+            setEcoData(eco);
+            setSocialData(social);
+            return;
+          }
+        }
       } catch (err) {
-        console.error("Erro ao carregar dados do dashboard:", err);
+        console.warn("Backend indisponível, usando dados de demonstração.", err);
       } finally {
-        setTimeout(() => setLoading(false), 800);
+        // Garante que dados mock são carregados se o backend falhar
+        setEcoData(prev => prev ?? MOCK_ECONOMIC_DATA);
+        setSocialData(prev => prev ?? MOCK_SOCIAL_DATA);
+        setTimeout(() => setLoading(false), 600);
       }
     };
     fetchData();
