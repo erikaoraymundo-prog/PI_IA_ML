@@ -8,6 +8,7 @@ import './index.css';
 import ProductPage from './pages/ProductPage';
 import LGPDPage from './pages/LGPDPage';
 import AboutPage from './pages/AboutPage';
+import InteractiveDashboard from './pages/InteractiveDashboard';
 
 const HERO_IMAGE_URL = "/hero_talent_match.png";
 
@@ -278,6 +279,7 @@ function App() {
           <div className="nav-links">
             <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('home'); }} className={currentPage === 'home' ? 'active' : ''}>Início</a>
             <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('product'); }} className={currentPage === 'product' ? 'active' : ''}>Nosso Produto</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('dashboard'); }} className={currentPage === 'dashboard' ? 'active' : ''}>Dados Interativos</a>
             <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('lgpd'); }} className={currentPage === 'lgpd' ? 'active' : ''}>LGPD</a>
             <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('about'); }} className={currentPage === 'about' ? 'active' : ''}>Sobre Nós</a>
           </div>
@@ -414,6 +416,7 @@ function App() {
       )}
 
       {currentPage === 'product' && <ProductPage />}
+      {currentPage === 'dashboard' && <InteractiveDashboard />}
       {currentPage === 'lgpd' && <LGPDPage />}
       {currentPage === 'about' && <AboutPage />}
 
