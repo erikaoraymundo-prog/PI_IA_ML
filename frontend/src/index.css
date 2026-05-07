@@ -1080,7 +1080,7 @@ input:focus, textarea:focus {
   align-items: center;
 }
 .p-hero-mockup {
-  background: #1d4045;
+  background: url('/product_hero_mockup.png') center/cover no-repeat;
   border-radius: 20px;
   width: 500px;
   height: 500px;
@@ -1292,7 +1292,7 @@ input:focus, textarea:focus {
   justify-content: center;
 }
 .p-mockup-dark {
-  background: #1a1a1a;
+  background: url('/matching_intelligence_mockup.png') center/cover no-repeat;
   border-radius: 20px;
   width: 500px;
   height: 400px;
