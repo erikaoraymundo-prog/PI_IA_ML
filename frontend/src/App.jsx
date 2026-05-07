@@ -32,6 +32,7 @@ function App() {
   const [showVagaModal, setShowVagaModal] = useState(false);
   const [vagaData, setVagaData] = useState({ titulo: '', empresa_nome: '', localizacao: '', escala_trabalho: '', requisitos_tecnicos: '', descricao: '' });
   const [postingVaga, setPostingVaga] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 
   const fetchJobs = async () => {
@@ -273,30 +274,37 @@ function App() {
   return (
     <div className="app-wrapper">
       <nav className="navbar">
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <div className="container navbar-container">
           <div className="logo">
             global<span className="logo-accent">TalentBridge</span>
           </div>
-          <div className="nav-links">
-            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('home'); }} className={currentPage === 'home' ? 'active' : ''}>Início</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('product'); }} className={currentPage === 'product' ? 'active' : ''}>Nosso Produto</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('dashboard'); }} className={currentPage === 'dashboard' ? 'active' : ''}>Dados Interativos</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('agent'); }} className={currentPage === 'agent' ? 'active' : ''}>🛡️ Verificação</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('lgpd'); }} className={currentPage === 'lgpd' ? 'active' : ''}>LGPD</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('about'); }} className={currentPage === 'about' ? 'active' : ''}>Sobre Nós</a>
-          </div>
-          <div className="auth-group" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-            {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-dark)', fontWeight: 500 }}>Olá, {user.fullName || user.displayName}</span>
-                <button onClick={logout} className="btn btn-outline" style={{ padding: '0.5rem 1rem' }}>Sair</button>
-              </div>
-            ) : (
-              <>
-                <a href="#" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} className="login-link" style={{ textDecoration: 'none', color: 'var(--text-dark)', fontWeight: 600, fontSize: '0.9rem' }}>Entrar</a>
-                <button onClick={() => setShowRegisterModal(true)} className="btn btn-primary" style={{ padding: '0.6rem 1.5rem' }}>Cadastrar</button>
-              </>
-            )}
+
+          <button className="menu-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? '✕' : '☰'}
+          </button>
+
+          <div className={`nav-wrapper ${isMenuOpen ? 'open' : ''}`}>
+            <div className="nav-links">
+              <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('home'); setIsMenuOpen(false); }} className={currentPage === 'home' ? 'active' : ''}>Início</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('product'); setIsMenuOpen(false); }} className={currentPage === 'product' ? 'active' : ''}>Nosso Produto</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('dashboard'); setIsMenuOpen(false); }} className={currentPage === 'dashboard' ? 'active' : ''}>Dados Interativos</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('agent'); setIsMenuOpen(false); }} className={currentPage === 'agent' ? 'active' : ''}>🛡️ Verificação</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('lgpd'); setIsMenuOpen(false); }} className={currentPage === 'lgpd' ? 'active' : ''}>LGPD</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('about'); setIsMenuOpen(false); }} className={currentPage === 'about' ? 'active' : ''}>Sobre Nós</a>
+            </div>
+            <div className="auth-group">
+              {user ? (
+                <div className="user-info">
+                  <span>Olá, {user.fullName || user.displayName}</span>
+                  <button onClick={() => { logout(); setIsMenuOpen(false); }} className="btn btn-outline">Sair</button>
+                </div>
+              ) : (
+                <>
+                  <a href="#" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); setIsMenuOpen(false); }} className="login-link">Entrar</a>
+                  <button onClick={() => { setShowRegisterModal(true); setIsMenuOpen(false); }} className="btn btn-primary">Cadastrar</button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </nav>

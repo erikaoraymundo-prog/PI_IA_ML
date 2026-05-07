@@ -120,17 +120,8 @@ const AgentePage = ({ user, onLoginRequired }) => {
   };
 
   return (
-    <div className="container" style={{ padding: '4rem 2rem', minHeight: 'calc(100vh - 80px)' }}>
-      <div style={{ 
-        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-        padding: '3rem',
-        borderRadius: '24px',
-        color: 'white',
-        marginBottom: '3rem',
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
+    <div className="container" style={{ padding: '4rem 1rem', minHeight: 'calc(100vh - 80px)' }}>
+      <div className="agente-header">
         <div style={{ position: 'relative', zIndex: 2 }}>
           <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem' }}>🛡️ AGENTE-RECRUITER</h1>
           <p style={{ fontSize: '1.1rem', opacity: 0.9, maxWidth: '700px', lineHeight: 1.6 }}>
@@ -139,7 +130,7 @@ const AgentePage = ({ user, onLoginRequired }) => {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '2rem' }}>
+      <div className="agente-grid">
         {/* Formulário */}
         <div className="card" style={{ padding: '2rem', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'white', height: 'fit-content' }}>
           <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem' }}>Dados do Candidato</h3>

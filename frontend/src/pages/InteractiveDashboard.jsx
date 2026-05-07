@@ -116,18 +116,9 @@ const InteractiveDashboard = () => {
   }
 
   return (
-    <div className="container" style={{ padding: '4rem 2rem', minHeight: 'calc(100vh - 80px)' }}>
+    <div className="container" style={{ padding: '4rem 1rem', minHeight: 'calc(100vh - 80px)' }}>
       {/* Header Section */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, #004d5b 0%, #00a896 100%)',
-        padding: '3rem',
-        borderRadius: '24px',
-        color: 'white',
-        marginBottom: '3rem',
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
+      <div className="agente-header" style={{ background: 'linear-gradient(135deg, #004d5b 0%, #00a896 100%)' }}>
         <div style={{ position: 'relative', zIndex: 2 }}>
           <h1 style={{ fontSize: '2.8rem', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.02em' }}>🌍 Dashboard de Impacto</h1>
           <p style={{ fontSize: '1.1rem', opacity: 0.9, maxWidth: '700px', lineHeight: 1.6 }}>
@@ -142,11 +133,7 @@ const InteractiveDashboard = () => {
       </div>
 
       {/* Tabs */}
-      <div style={{ 
-        display: 'flex', gap: '1rem', marginBottom: '2.5rem', 
-        padding: '0.5rem', background: '#f1f5f9', borderRadius: '16px',
-        width: 'fit-content'
-      }}>
+      <div className="dashboard-tabs">
         <button 
           onClick={() => setActiveTab('economic')}
           style={{ 
@@ -214,7 +201,7 @@ const InteractiveDashboard = () => {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
             <div className="card" style={{ padding: '2rem', borderRadius: '24px', background: 'white', border: '1px solid #e2e8f0' }}>
               <h3 style={{ marginBottom: '2rem', fontSize: '1.25rem', fontWeight: 700 }}>Comparação Salarial Geográfica</h3>
               <div style={{ height: '350px' }}>
@@ -293,11 +280,13 @@ const InteractiveDashboard = () => {
             borderRadius: '24px', 
             border: '1px solid rgba(99, 102, 241, 0.1)',
             display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
             gap: '2rem',
             alignItems: 'center'
           }}>
             <div style={{ fontSize: '3rem' }}>💡</div>
-            <div>
+            <div style={{ flex: '1 1 300px' }}>
               <h3 style={{ marginBottom: '0.75rem', fontSize: '1.2rem', fontWeight: 700, color: '#4338ca' }}>Insights de Impacto</h3>
               <p style={{ color: '#475569', fontSize: '1rem', lineHeight: 1.7, margin: 0 }}>
                 Ao conectar talentos latino-americanos com empresas globais, não apenas otimizamos custos, mas 
