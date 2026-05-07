@@ -8,3 +8,5 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 )
+
+// Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

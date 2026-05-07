@@ -78,3 +78,5 @@ def get_firebase_status():
 # Aliases para compatibilidade com código legado
 db = _db
 bucket = _bucket
+
+# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

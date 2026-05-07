@@ -236,3 +236,5 @@ export function generateCourseSuggestions(resumeText) {
 
   return suggestions.slice(0, 3);
 }
+
+// Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

@@ -52,3 +52,4 @@ if __name__ == "__main__":
     pass
 
 # aposo parse, navegaremos ate ao arquivo nlp_processor.py para normalizaÃ§Ã£o
+# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

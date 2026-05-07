@@ -22,3 +22,5 @@ export const storage = getStorage(app);
 
 export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
 export const logout = () => signOut(auth);
+
+// Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

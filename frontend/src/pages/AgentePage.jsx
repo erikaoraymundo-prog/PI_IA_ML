@@ -257,3 +257,5 @@ const AgentePage = ({ user, onLoginRequired }) => {
 };
 
 export default AgentePage;
+
+// Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

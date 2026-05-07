@@ -177,3 +177,5 @@ class VagaInternaInput(BaseModel):
         if not v or not str(v).strip():
             raise ValueError("escala_trabalho é obrigatório.")
         return str(v).strip().lower()
+
+# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

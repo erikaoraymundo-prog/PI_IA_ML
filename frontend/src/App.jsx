@@ -718,3 +718,5 @@ function App() {
 }
 
 export default App;
+
+// Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

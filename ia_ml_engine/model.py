@@ -23,3 +23,4 @@ if __name__ == "__main__":
     pass
 
 # vetorizaÃ§Ã£o completa, seguiremos ao arquivo matcher.py para o cÃ¡lculo de similaridade
+# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

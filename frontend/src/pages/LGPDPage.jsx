@@ -127,3 +127,5 @@ function LGPDPage() {
 }
 
 export default LGPDPage;
+
+// Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

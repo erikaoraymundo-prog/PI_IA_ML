@@ -429,3 +429,5 @@ def persist_with_dedup(vagas: list[VagaOportunidade], db) -> dict:
 
     logger.info(f"[Scraper/Dedup] salvo={salvo}, duplicatas={duplicatas}, erros={erros}")
     return {"salvo": salvo, "duplicatas": duplicatas, "erros": erros}
+
+# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

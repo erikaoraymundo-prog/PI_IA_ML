@@ -432,3 +432,5 @@ def fetch_all_api_jobs() -> list[VagaOportunidade]:
 
     logger.info(f"[ApiFetcher] Vagas válidas após filtragem: {len(vagas)}")
     return vagas
+
+# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

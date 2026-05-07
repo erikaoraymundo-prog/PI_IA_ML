@@ -1799,6 +1799,8 @@ input:focus, textarea:focus {
   margin-bottom: 3rem;
 }
 
+/* Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção */
+
 /* Agente Page Responsiveness */
 .agente-grid {
   display: grid;

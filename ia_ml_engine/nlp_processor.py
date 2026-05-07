@@ -95,3 +95,4 @@ if __name__ == "__main__":
     print(clean_text(test_text))
 
 # apos a normalizaÃ§Ã£o, navegaremos ate ao arquivo model.py para a vetorizaÃ§Ã£o
+# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

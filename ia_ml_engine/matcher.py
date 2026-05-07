@@ -231,3 +231,5 @@ if __name__ == "__main__":
         peso = "✓ (w=1.2)" if r["fonte_peso_aplicado"] else ""
         print(f"  [{r['fonte_tipo']}] {r['titulo']}: {r['score']}% (base={r['score_base']}%) {peso}")
 
+# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção
+

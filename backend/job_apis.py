@@ -37,3 +37,5 @@ def fetch_external_jobs():
         print(f"Erro ao buscar vagas externas: {e}")
     
     return []
+
+# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

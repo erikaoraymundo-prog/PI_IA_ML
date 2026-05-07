@@ -171,3 +171,5 @@ def recommend_courses(missing_skills: list[str], udemy_courses_json: list[dict] 
         })
         
     return results
+
+# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção
