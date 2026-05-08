@@ -1073,6 +1073,17 @@ input:focus, textarea:focus {
   padding: 6rem 2rem !important;
   align-items: center;
 }
+.p-hero-content {
+  flex: 1;
+  min-width: 0;
+}
+.p-hero-visual {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
 .p-hero-title {
   font-size: 4rem;
   line-height: 1;
@@ -1104,6 +1115,10 @@ input:focus, textarea:focus {
     flex-direction: column;
     text-align: center;
     padding: 4rem 1rem !important;
+  }
+
+  .p-hero-content, .p-hero-visual {
+    width: 100%;
   }
 
   .p-hero-title {
