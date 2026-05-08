@@ -11,13 +11,13 @@ MOCK_ECONOMIC_DATA = {
     "upside": 511,  # (110k / 18k)*100 - 100
     "salaries_dist": [
         {"Country": "Brazil", "Salario": 12000},
-        {"Country": "Brazil", "Salario": 18000},
-        {"Country": "Brazil", "Salario": 24000},
+        {"Country": "Spain", "Salario": 18000},
+        {"Country": "Bolivia", "Salario": 24000},
         {"Country": "USA", "Salario": 80000},
-        {"Country": "USA", "Salario": 110000},
-        {"Country": "USA", "Salario": 150000},
+        {"Country": "China", "Salario": 110000},
+        {"Country": "Canada", "Salario": 150000},
         {"Country": "Germany", "Salario": 60000},
-        {"Country": "Germany", "Salario": 75000},
+        {"Country": "Japan", "Salario": 75000},
     ],
     "remote_dist": [
         {"name": "Remoto", "value": 350},
