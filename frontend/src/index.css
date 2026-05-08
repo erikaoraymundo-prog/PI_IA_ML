@@ -891,28 +891,8 @@ input:focus, textarea:focus {
   padding: 4rem 2rem !important;
 }
 
-@media (max-width: 1024px) {
-  .lgpd-main-content {
-    flex-direction: column;
-    padding: 2rem 1rem !important;
-    gap: 2rem;
-  }
-  
-  .lgpd-sidebar {
-    width: 100%;
-    position: static;
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-  }
-
-  .lgpd-content {
-    padding: 2rem;
-  }
+.mobile-index-toggle {
+  display: none;
 }
 .lgpd-sidebar {
   width: 250px;
@@ -920,6 +900,67 @@ input:focus, textarea:focus {
   position: sticky;
   top: 120px;
   align-self: flex-start;
+}
+
+@media (max-width: 1024px) {
+  .lgpd-main-content {
+    flex-direction: column;
+    padding: 2rem 1rem !important;
+    gap: 2rem;
+  }
+  
+  .mobile-index-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 1001;
+    cursor: pointer;
+  }
+
+  .lgpd-sidebar {
+    position: fixed;
+    top: auto;
+    bottom: 5rem;
+    right: 2rem;
+    width: calc(100% - 4rem);
+    max-width: 300px;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+  }
+
+  .lgpd-sidebar.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .sidebar-nav {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+
+  .lgpd-content {
+    padding: 2rem;
+  }
 }
 .sidebar-title {
   font-size: 0.75rem;

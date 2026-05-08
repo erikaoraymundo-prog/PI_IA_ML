@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../index.css';
 
 function LGPDPage() {
+  const [isIndexOpen, setIsIndexOpen] = useState(false);
   return (
     <div className="lgpd-page">
       <div className="container lgpd-header">
@@ -17,13 +18,17 @@ function LGPDPage() {
       </div>
 
       <div className="container lgpd-main-content">
-        <aside className="lgpd-sidebar">
+        <button className="mobile-index-toggle" onClick={() => setIsIndexOpen(!isIndexOpen)}>
+          {isIndexOpen ? '✕ Fechar' : '☰ Índice'}
+        </button>
+
+        <aside className={`lgpd-sidebar ${isIndexOpen ? 'open' : ''}`}>
           <h4 className="sidebar-title">ÍNDICE DO DOCUMENTO</h4>
           <ul className="sidebar-nav">
-            <li className="active"><a href="#tratamento">Tratamento de Dados</a></li>
-            <li><a href="#direitos">Direitos do Usuário</a></li>
-            <li><a href="#seguranca">Segurança da Informação</a></li>
-            <li><a href="#dpo">Encarregado de Dados</a></li>
+            <li className="active"><a href="#tratamento" onClick={() => setIsIndexOpen(false)}>Tratamento de Dados</a></li>
+            <li><a href="#direitos" onClick={() => setIsIndexOpen(false)}>Direitos do Usuário</a></li>
+            <li><a href="#seguranca" onClick={() => setIsIndexOpen(false)}>Segurança da Informação</a></li>
+            <li><a href="#dpo" onClick={() => setIsIndexOpen(false)}>Encarregado de Dados</a></li>
           </ul>
         </aside>
 
