@@ -23,10 +23,10 @@ def log_audit(candidate_name, action, status, details=None):
 
 def run_background_check(candidate_data):
     """
-    Executa o fluxo completo do AGENTE-RECRUTER para um candidato.
+    Executa o fluxo completo do AGENTE-RECRUITER para um candidato.
     Retorna o estado final para o Dashboard.
     """
-    print(f"[AGENTE-RECRUTER] Iniciando verificação para: {candidate_data['candidate_name']}")
+    print(f"[AGENTE-RECRUITER] Iniciando verificação para: {candidate_data['candidate_name']}")
     
     # Log de início de processo
     log_audit(
@@ -42,7 +42,7 @@ def run_background_check(candidate_data):
         final_state = app.invoke(candidate_data, config)
         
         if final_state.get("errors"):
-            print(f"[AGENTE-RECRUTER] ERRO NO FLUXO: {final_state['errors']}")
+            print(f"[AGENTE-RECRUITER] ERRO NO FLUXO: {final_state['errors']}")
             log_audit(
                 candidate_data['candidate_name'],
                 "verification_failed",
@@ -50,7 +50,7 @@ def run_background_check(candidate_data):
                 {"errors": final_state['errors']}
             )
         else:
-            print("[AGENTE-RECRUTER] Relatório gerado com sucesso.")
+            print("[AGENTE-RECRUITER] Relatório gerado com sucesso.")
             
             # Salva o relatório com timestamp para evitar conflitos
             safe_name = candidate_data['candidate_name'].replace(' ', '_').replace('/', '_')
@@ -71,7 +71,7 @@ def run_background_check(candidate_data):
         
     except Exception as e:
         error_msg = str(e)
-        print(f"[AGENTE-RECRUTER] Exceção crítica: {error_msg}")
+        print(f"[AGENTE-RECRUITER] Exceção crítica: {error_msg}")
         log_audit(
             candidate_data['candidate_name'],
             "verification_exception",
@@ -96,7 +96,7 @@ def get_system_stats():
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("🛡️ AGENTE-RECRUTER - Modo CLI Console")
+    print("🛡️ AGENTE-RECRUITER - Modo CLI Console")
     print("=" * 60)
     
     nome = input("Candidato: ") or "João Silva"
