@@ -317,7 +317,7 @@ function App() {
           <p className="hero-subtitle">
             A forma mais simples de enviar seu currículo ou encontrar o profissional ideal para sua empresa. Precisão técnica aliada à visão humana.
           </p>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button className="btn btn-primary" onClick={handleCandidateClick}>
               {loading ? 'Processando...' : 'Sou Candidato'}
             </button>
