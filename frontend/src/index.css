@@ -1093,8 +1093,9 @@ input:focus, textarea:focus {
 .p-hero-mockup {
   background: url('/product_hero_mockup.png') center/cover no-repeat;
   border-radius: 20px;
-  width: 500px;
-  height: 500px;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1 / 1;
   position: relative;
 }
 
@@ -1117,11 +1118,6 @@ input:focus, textarea:focus {
     justify-content: center;
   }
 
-  .p-hero-mockup {
-    width: 300px;
-    height: 300px;
-    margin: 2rem auto;
-  }
 }
 .mockup-floaty {
   position: absolute;
@@ -1199,12 +1195,6 @@ input:focus, textarea:focus {
     max-width: 400px;
   }
 
-  .p-mockup-dark {
-    width: 100%;
-    max-width: 500px;
-    height: 300px;
-    margin: 0 auto;
-  }
 }
 .bg-gray-section {
   background: #f4f6f8;
@@ -1305,8 +1295,9 @@ input:focus, textarea:focus {
 .p-mockup-dark {
   background: url('/matching_intelligence_mockup.png') center/cover no-repeat;
   border-radius: 20px;
-  width: 500px;
-  height: 400px;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 5/4;
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
 }
 .dashboard-preview {
