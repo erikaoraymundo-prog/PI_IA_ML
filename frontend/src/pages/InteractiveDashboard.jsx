@@ -214,7 +214,7 @@ const InteractiveDashboard = () => {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="Country" axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
+                    <XAxis dataKey="Country" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} interval={0} />
                     <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
                     <Tooltip content={<CustomTooltip />} />
                     <Bar dataKey="Salario" fill="url(#barGradient)" radius={[8, 8, 0, 0]} barSize={40} />
