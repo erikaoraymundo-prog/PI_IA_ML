@@ -1,3 +1,6 @@
+import os
+os.environ['GRPC_DNS_RESOLVER'] = 'native'
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.firebase_config import get_firebase_status

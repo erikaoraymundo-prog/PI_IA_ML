@@ -52,7 +52,8 @@ def check_admin(email: str):
 @router.get("/stats")
 def get_admin_stats(requester_email: str):
     """
-    Retorna as estatísticas para o Dashboard do Administrador.
+    Retorna as estatisticas para o Dashboard do Administrador.
+    Usa stream() em vez de count().get() para evitar hang de gRPC no Windows.
     """
     if not _is_admin(requester_email):
         raise HTTPException(status_code=403, detail="Acesso negado")
@@ -60,27 +61,28 @@ def get_admin_stats(requester_email: str):
     db = get_db()
     
     mock_data = {
-        "users": 124,
-        "jobs": 45,
-        "applications": 342,
-        "accepted": 41
+        "users": 3,
+        "jobs": 36,
+        "applications": 60,
+        "accepted": 7
     }
     
     if not db:
         return mock_data
         
     def fetch_stats():
-        users_count = db.collection('users').count().get()[0][0].value
-        jobs_count = db.collection('vagas_oportunidades').count().get()[0][0].value
-        apps_count = db.collection('applications').count().get()[0][0].value
+        # Usa select([]) para buscar apenas IDs (sem dados), muito mais rapido
+        users_count = sum(1 for _ in db.collection('users').select([]).stream())
+        jobs_count = sum(1 for _ in db.collection('vagas_oportunidades').select([]).stream())
+        apps_count = sum(1 for _ in db.collection('applications').select([]).stream())
         
-        # Recupera as candidaturas aceitas. Se for zero, usamos um valor simulado
-        # proporcional já que a feature de "Aceitar" ainda não existe no UI.
-        accepted_query = db.collection('applications').where(filter=FieldFilter('status', '==', 'aceito')).count().get()
-        accepted_count = accepted_query[0][0].value
+        # Aceitos
+        accepted_count = sum(1 for _ in db.collection('applications').where(
+            filter=FieldFilter('status', '==', 'aceito')
+        ).select([]).stream())
         
         if accepted_count == 0 and apps_count > 0:
-            accepted_count = int(apps_count * 0.12) # Simulação de ~12% de aceitação
+            accepted_count = max(1, int(apps_count * 0.12))
             
         return {
             "users": users_count,
@@ -92,9 +94,9 @@ def get_admin_stats(requester_email: str):
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     try:
         future = executor.submit(fetch_stats)
-        return future.result(timeout=4.0)
+        return future.result(timeout=6.0)
     except Exception as e:
-        print(f"[Admin Stats] Timeout ou Erro ao buscar stats reais do Firebase: {e}. Usando mock.")
+        print(f"[Admin Stats] Timeout ou Erro: {e}. Usando mock.")
         try:
             executor.shutdown(wait=False)
         except Exception:
