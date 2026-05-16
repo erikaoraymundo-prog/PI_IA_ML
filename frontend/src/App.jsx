@@ -53,18 +53,22 @@ function App() {
       if (u) {
         const userDoc = await getDoc(doc(db, "users", u.uid));
         setUser({ ...u, ...userDoc.data() });
-        // Verificar se é admin
+        // Verificar se é admin diretamente no Firestore (funciona local e no Vercel)
         try {
-          const BACKEND_URL = import.meta.env.VITE_API_URL || '';
-          const res = await fetch(`${BACKEND_URL}/api/admin/check?email=${encodeURIComponent(u.email)}`);
-          if (res.ok) {
-            const data = await res.json();
-            setIsAdmin(data.isAdmin);
-          } else {
-            setIsAdmin(false);
-          }
+          const adminSnap = await getDocs(collection(db, 'user_Admin'));
+          const adminEmails = [];
+          adminSnap.forEach(d => adminEmails.push(d.data().email?.toLowerCase()));
+          setIsAdmin(adminEmails.includes(u.email.toLowerCase()));
         } catch {
-          setIsAdmin(false);
+          // Fallback: se não conseguir ler user_Admin, tenta via backend local
+          try {
+            const BACKEND_URL = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${BACKEND_URL}/api/admin/check?email=${encodeURIComponent(u.email)}`);
+            if (res.ok) {
+              const data = await res.json();
+              setIsAdmin(data.isAdmin);
+            } else { setIsAdmin(false); }
+          } catch { setIsAdmin(false); }
         }
       } else {
         setUser(null);
