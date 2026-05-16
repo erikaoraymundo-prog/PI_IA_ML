@@ -10,8 +10,9 @@ import LGPDPage from './pages/LGPDPage';
 import AboutPage from './pages/AboutPage';
 import AgentePage from './pages/AgentePage';
 
-// Lazy load do Dashboard — Recharts (~200KB) só carrega quando o usuário acessar a aba
+// Lazy load do Dashboard e Admin — só carregam quando o usuário acessar a aba
 const InteractiveDashboard = lazy(() => import('./pages/InteractiveDashboard'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
 
 const HERO_IMAGE_URL = "/hero_talent_match.png";
 
@@ -35,6 +36,7 @@ function App() {
   const [vagaData, setVagaData] = useState({ titulo: '', empresa_nome: '', localizacao: '', escala_trabalho: '', requisitos_tecnicos: '', descricao: '' });
   const [postingVaga, setPostingVaga] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
 
   const fetchJobs = async () => {
@@ -51,8 +53,22 @@ function App() {
       if (u) {
         const userDoc = await getDoc(doc(db, "users", u.uid));
         setUser({ ...u, ...userDoc.data() });
+        // Verificar se é admin
+        try {
+          const BACKEND_URL = import.meta.env.VITE_API_URL || '';
+          const res = await fetch(`${BACKEND_URL}/api/admin/check?email=${encodeURIComponent(u.email)}`);
+          if (res.ok) {
+            const data = await res.json();
+            setIsAdmin(data.isAdmin);
+          } else {
+            setIsAdmin(false);
+          }
+        } catch {
+          setIsAdmin(false);
+        }
       } else {
         setUser(null);
+        setIsAdmin(false);
       }
     });
     return () => unsubscribe();
@@ -293,6 +309,7 @@ function App() {
               <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('agent'); setIsMenuOpen(false); }} className={currentPage === 'agent' ? 'active' : ''}>🛡️ Verificação</a>
               <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('lgpd'); setIsMenuOpen(false); }} className={currentPage === 'lgpd' ? 'active' : ''}>LGPD</a>
               <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('about'); setIsMenuOpen(false); }} className={currentPage === 'about' ? 'active' : ''}>Sobre Nós</a>
+              {isAdmin && <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('admin'); setIsMenuOpen(false); }} className={currentPage === 'admin' ? 'active' : ''} style={{ color: currentPage === 'admin' ? '#4338ca' : undefined }}>⚙️ Admin</a>}
             </div>
             <div className="auth-group">
               {user ? (
@@ -459,6 +476,17 @@ function App() {
       {currentPage === 'agent' && <AgentePage user={user} onLoginRequired={() => setShowLoginModal(true)} />}
       {currentPage === 'lgpd' && <LGPDPage />}
       {currentPage === 'about' && <AboutPage />}
+      {currentPage === 'admin' && (
+        <Suspense fallback={
+          <div className="container" style={{ padding: '8rem 2rem', textAlign: 'center', minHeight: '80vh' }}>
+            <div style={{ width: '50px', height: '50px', border: '4px solid #f3f3f3', borderTop: '4px solid #4338ca', borderRadius: '50%', margin: '0 auto 1.5rem', animation: 'spin 1s linear infinite' }}></div>
+            <p style={{ color: 'var(--text-muted)' }}>Carregando painel admin...</p>
+            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          </div>
+        }>
+          <AdminPage user={user} onLoginRequired={() => setShowLoginModal(true)} />
+        </Suspense>
+      )}
 
       <footer>
         <div className="container">
