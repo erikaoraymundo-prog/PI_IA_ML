@@ -94,5 +94,3 @@ if __name__ == "__main__":
     test_text = "Conhecimento intermediÃ¡rio em C#, C++, Node.js, CSS e Machine Learning."
     print(clean_text(test_text))
 
-# apos a normalizaÃ§Ã£o, navegaremos ate ao arquivo model.py para a vetorizaÃ§Ã£o
-# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção

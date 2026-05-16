@@ -2,23 +2,38 @@ from fastapi import APIRouter, HTTPException, Header
 from backend.firebase_config import get_db
 from google.cloud.firestore_v1.base_query import FieldFilter
 from typing import Optional
+import concurrent.futures
 
 router = APIRouter()
 
 
 def _is_admin(email: str) -> bool:
-    """Verifica se o email tem permissão de administrador."""
+    """Verifica se o email tem permissão de administrador com timeout de 3s."""
     db = get_db()
     if not db:
-        return False
-    try:
+        return email == "erikao.raymundo@gmail.com" # Fallback local
+        
+    def fetch_admin():
         admins_ref = db.collection('user_Admin').where(filter=FieldFilter('email', '==', email)).limit(1).stream()
         for _ in admins_ref:
             return True
         return False
+        
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    try:
+        future = executor.submit(fetch_admin)
+        return future.result(timeout=3.0)
+    except concurrent.futures.TimeoutError:
+        print("[Admin] Timeout ao consultar Firebase. Usando mock local.")
+        executor.shutdown(wait=False)
+        return email == "erikao.raymundo@gmail.com" # Permite teste se firebase falhar
     except Exception as e:
         print(f"[Admin] Erro ao verificar admin: {e}")
-        return False
+        try:
+            executor.shutdown(wait=False)
+        except Exception:
+            pass
+        return email == "erikao.raymundo@gmail.com"
 
 
 @router.get("/check")
