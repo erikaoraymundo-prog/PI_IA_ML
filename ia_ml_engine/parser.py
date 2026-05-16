@@ -40,7 +40,7 @@ def extract_text(caminho_arquivo):
     elif extensao == ".docx":
         return extract_text_from_docx(caminho_arquivo)
     else:
-        # trata outros formatos como texto puro ou nÃ£o suportados
+        # trata outros formatos como texto puro ou nao suportados
         try:
             with open(caminho_arquivo, "r", encoding="utf-8") as arquivo:
                 return arquivo.read()
@@ -51,5 +51,5 @@ if __name__ == "__main__":
     # Script de teste
     pass
 
-# aposo parse, navegaremos ate ao arquivo nlp_processor.py para normalizaÃ§Ã£o
-# Próximo passo: Refinamento de UX, Integração de APIs e Testes de Produção
+# apos o parse, navegaremos ate ao arquivo nlp_processor.py para normalizacao
+# Proximo passo: Refinamento de UX, Integracao de APIs e Testes de Producao
