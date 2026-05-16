@@ -9,12 +9,12 @@ router = APIRouter()
 
 def _is_admin(email: str) -> bool:
     """Verifica se o email tem permissão de administrador com timeout de 3s."""
-    if email == "erikao.raymundo@gmail.com":
+    if email.lower() == "erikao.raymundo@gmail.com":
         return True # Bypass rápido para não travar a UI por 3 segundos
         
     db = get_db()
     if not db:
-        return email == "erikao.raymundo@gmail.com" # Fallback local
+        return email.lower() == "erikao.raymundo@gmail.com" # Fallback local
         
     def fetch_admin():
         admins_ref = db.collection('user_Admin').where(filter=FieldFilter('email', '==', email)).limit(1).stream()
@@ -29,14 +29,14 @@ def _is_admin(email: str) -> bool:
     except concurrent.futures.TimeoutError:
         print("[Admin] Timeout ao consultar Firebase. Usando mock local.")
         executor.shutdown(wait=False)
-        return email == "erikao.raymundo@gmail.com" # Permite teste se firebase falhar
+        return email.lower() == "erikao.raymundo@gmail.com" # Permite teste se firebase falhar
     except Exception as e:
         print(f"[Admin] Erro ao verificar admin: {e}")
         try:
             executor.shutdown(wait=False)
         except Exception:
             pass
-        return email == "erikao.raymundo@gmail.com"
+        return email.lower() == "erikao.raymundo@gmail.com"
 
 
 @router.get("/check")
