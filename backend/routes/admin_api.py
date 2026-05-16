@@ -9,6 +9,9 @@ router = APIRouter()
 
 def _is_admin(email: str) -> bool:
     """Verifica se o email tem permissão de administrador com timeout de 3s."""
+    if email == "erikao.raymundo@gmail.com":
+        return True # Bypass rápido para não travar a UI por 3 segundos
+        
     db = get_db()
     if not db:
         return email == "erikao.raymundo@gmail.com" # Fallback local
