@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Header
 from backend.firebase_config import get_db
+from google.cloud.firestore_v1.base_query import FieldFilter
 from typing import Optional
 
 router = APIRouter()
@@ -11,7 +12,7 @@ def _is_admin(email: str) -> bool:
     if not db:
         return False
     try:
-        admins_ref = db.collection('user_Admin').where('email', '==', email).limit(1).stream()
+        admins_ref = db.collection('user_Admin').where(filter=FieldFilter('email', '==', email)).limit(1).stream()
         for _ in admins_ref:
             return True
         return False

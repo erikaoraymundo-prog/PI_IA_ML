@@ -15,6 +15,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from backend.firebase_config import get_db
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 
 def init_admin(email: str, nome: str = "", role: str = "super_admin"):
@@ -26,7 +27,7 @@ def init_admin(email: str, nome: str = "", role: str = "super_admin"):
         return False
 
     # Verificar se já existe
-    existing = db.collection('user_Admin').where('email', '==', email).limit(1).stream()
+    existing = db.collection('user_Admin').where(filter=FieldFilter('email', '==', email)).limit(1).stream()
     for doc in existing:
         print(f"⚠️  O email '{email}' já é administrador (ID: {doc.id})")
         return True
