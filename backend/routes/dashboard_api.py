@@ -1,8 +1,24 @@
 from fastapi import APIRouter
 from backend.firebase_config import get_db
 import concurrent.futures
+import time
 
 router = APIRouter()
+
+# ── Cache em memória com TTL ─────────────────────────────────────────────
+_cache = {}
+CACHE_TTL_SECONDS = 300  # 5 minutos
+
+def _get_cached(key):
+    """Retorna dado do cache se ainda válido, senão None."""
+    entry = _cache.get(key)
+    if entry and (time.time() - entry["ts"]) < CACHE_TTL_SECONDS:
+        return entry["data"]
+    return None
+
+def _set_cache(key, data):
+    """Armazena dado no cache com timestamp."""
+    _cache[key] = {"data": data, "ts": time.time()}
 
 # Mock data baseada na média global de mercado para a Entrega 2 do PI
 MOCK_ECONOMIC_DATA = {
@@ -43,22 +59,24 @@ MOCK_SOCIAL_DATA = {
 @router.get("/economic")
 def get_economic_impact():
     """
-    Tenta buscar dados reais de Vagas do Firebase com timeout de 3 segundos.
-    Se falhar ou demorar, retorna Mock Data realista para demonstração.
+    Retorna dados econômicos para o dashboard.
+    Usa cache em memória (TTL 5min) para evitar queries repetidas ao Firebase.
+    Se Firebase desativado ou indisponível, retorna Mock Data instantaneamente.
     """
     import os
     if os.getenv("USE_FIREBASE_DASHBOARD", "false").lower() != "true":
         return MOCK_ECONOMIC_DATA
+
+    # Verificar cache primeiro
+    cached = _get_cached("economic")
+    if cached is not None:
+        return cached
         
     def fetch_firebase():
-        print("Buscando DB...")
         db = get_db()
-        print("DB:", db)
         if not db:
             raise Exception("No DB")
-        print("Pegando jobs...")
         jobs_ref = db.collection('jobs').limit(100).stream()
-        print("Iterando...")
         remote_count = 0
         presencial_count = 0
         total_jobs = 0
@@ -86,8 +104,10 @@ def get_economic_impact():
                 {"name": "Remoto", "value": remote_count},
                 {"name": "Presencial", "value": presencial_count}
             ]
+            _set_cache("economic", result)
             return result
             
+        _set_cache("economic", MOCK_ECONOMIC_DATA)
         return MOCK_ECONOMIC_DATA
     except concurrent.futures.TimeoutError:
         print("Timeout ao buscar dados no Firebase. Retornando Mock Data.")
@@ -95,17 +115,26 @@ def get_economic_impact():
         return MOCK_ECONOMIC_DATA
     except Exception as e:
         print(f"Erro ao buscar economic data no firebase: {e}")
-        executor.shutdown(wait=False)
+        try:
+            executor.shutdown(wait=False)
+        except Exception:
+            pass
         return MOCK_ECONOMIC_DATA
 
 @router.get("/social")
 def get_social_impact():
     """
-    Tenta buscar dados de Currículos/Usuários do Firebase com timeout de 3 segundos.
+    Retorna dados sociais para o dashboard.
+    Usa cache em memória (TTL 5min) para evitar queries repetidas ao Firebase.
     """
     import os
     if os.getenv("USE_FIREBASE_DASHBOARD", "false").lower() != "true":
         return MOCK_SOCIAL_DATA
+
+    # Verificar cache primeiro
+    cached = _get_cached("social")
+    if cached is not None:
+        return cached
         
     def fetch_users():
         db = get_db()
@@ -135,10 +164,13 @@ def get_social_impact():
         
         if total_users > 5 and skills_counter:
             sorted_skills = sorted(skills_counter.items(), key=lambda x: x[1], reverse=True)[:15]
-            return {
+            result = {
                 "top_skills": [{"name": k, "count": v} for k, v in sorted_skills]
             }
+            _set_cache("social", result)
+            return result
             
+        _set_cache("social", MOCK_SOCIAL_DATA)
         return MOCK_SOCIAL_DATA
     except concurrent.futures.TimeoutError:
         print("Timeout ao buscar dados sociais no Firebase. Retornando Mock Data.")
@@ -146,6 +178,8 @@ def get_social_impact():
         return MOCK_SOCIAL_DATA
     except Exception as e:
         print(f"Erro ao buscar social data no firebase: {e}")
-        executor.shutdown(wait=False)
+        try:
+            executor.shutdown(wait=False)
+        except Exception:
+            pass
         return MOCK_SOCIAL_DATA
-

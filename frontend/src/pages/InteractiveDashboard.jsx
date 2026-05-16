@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend, CartesianGrid 
@@ -42,7 +42,7 @@ const MOCK_SOCIAL_DATA = {
   ]
 };
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = memo(({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div style={{ 
@@ -61,7 +61,19 @@ const CustomTooltip = ({ active, payload, label }) => {
     );
   }
   return null;
-};
+});
+
+// Skeleton loader para cards e gráficos
+const SkeletonCard = ({ height = '200px' }) => (
+  <div style={{
+    background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+    backgroundSize: '200% 100%',
+    animation: 'shimmer 1.5s infinite',
+    borderRadius: '20px',
+    height,
+    width: '100%'
+  }} />
+);
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || '';
 
@@ -72,45 +84,114 @@ const InteractiveDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchData = async () => {
-      setLoading(true);
+      // Se não há backend configurado, usar mock data instantaneamente
+      if (!BACKEND_URL) {
+        setEcoData(MOCK_ECONOMIC_DATA);
+        setSocialData(MOCK_SOCIAL_DATA);
+        setLoading(false);
+        return;
+      }
+
+      // Se tem backend, fazer fetch com AbortController para cancelar se demorar
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
       try {
-        if (BACKEND_URL) {
-          const [ecoRes, socialRes] = await Promise.all([
-            fetch(`${BACKEND_URL}/api/dashboard/economic`),
-            fetch(`${BACKEND_URL}/api/dashboard/social`)
+        const [ecoRes, socialRes] = await Promise.all([
+          fetch(`${BACKEND_URL}/api/dashboard/economic`, { signal: controller.signal }),
+          fetch(`${BACKEND_URL}/api/dashboard/social`, { signal: controller.signal })
+        ]);
+
+        clearTimeout(timeoutId);
+
+        if (!cancelled && ecoRes.ok && socialRes.ok) {
+          const [eco, social] = await Promise.all([
+            ecoRes.json(),
+            socialRes.json()
           ]);
-          if (ecoRes.ok && socialRes.ok) {
-            const eco = await ecoRes.json();
-            const social = await socialRes.json();
-            setEcoData(eco);
-            setSocialData(social);
-            return;
-          }
+          setEcoData(eco);
+          setSocialData(social);
+        } else if (!cancelled) {
+          // Fallback para mock se API retornar erro
+          setEcoData(MOCK_ECONOMIC_DATA);
+          setSocialData(MOCK_SOCIAL_DATA);
         }
       } catch (err) {
-        console.warn("Backend indisponível, usando dados de demonstração.", err);
+        if (!cancelled) {
+          console.warn("Backend indisponível, usando dados de demonstração.", err.name === 'AbortError' ? '(timeout)' : err);
+          setEcoData(MOCK_ECONOMIC_DATA);
+          setSocialData(MOCK_SOCIAL_DATA);
+        }
       } finally {
-        // Garante que dados mock são carregados se o backend falhar
-        setEcoData(prev => prev ?? MOCK_ECONOMIC_DATA);
-        setSocialData(prev => prev ?? MOCK_SOCIAL_DATA);
-        setTimeout(() => setLoading(false), 600);
+        clearTimeout(timeoutId);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
+
     fetchData();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Memoizar dados dos gráficos para evitar re-renders desnecessários
+  const salariesData = useMemo(() => ecoData?.salaries_dist || [], [ecoData]);
+  const remoteData = useMemo(() => ecoData?.remote_dist || [], [ecoData]);
+  const skillsData = useMemo(() => socialData?.top_skills || [], [socialData]);
+
+  const handleTabChange = useCallback((tab) => {
+    setActiveTab(tab);
   }, []);
 
   if (loading) {
     return (
-      <div className="container" style={{ padding: '8rem 2rem', textAlign: 'center', minHeight: '80vh' }}>
-        <div className="loading-spinner" style={{ 
-          width: '50px', height: '50px', border: '4px solid #f3f3f3', 
-          borderTop: '4px solid var(--primary)', borderRadius: '50%', 
-          margin: '0 auto 1.5rem', animation: 'spin 1s linear infinite' 
-        }}></div>
-        <h2 className="section-title" style={{ fontSize: '1.8rem', opacity: 0.8 }}>Analisando Métricas Globais...</h2>
-        <p className="hero-subtitle" style={{ margin: '0.5rem auto' }}>Conectando dados do Firebase e processando tendências.</p>
-        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+      <div className="container" style={{ padding: '4rem 1rem', minHeight: 'calc(100vh - 80px)' }}>
+        {/* Header Skeleton */}
+        <div style={{
+          background: 'linear-gradient(135deg, #004d5b 0%, #00a896 100%)',
+          borderRadius: '24px', padding: '3rem', marginBottom: '2rem',
+          position: 'relative', overflow: 'hidden'
+        }}>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{ 
+              width: '350px', height: '2.8rem', background: 'rgba(255,255,255,0.2)', 
+              borderRadius: '12px', marginBottom: '1rem' 
+            }} />
+            <div style={{ 
+              width: '500px', maxWidth: '100%', height: '1.1rem', background: 'rgba(255,255,255,0.15)', 
+              borderRadius: '8px' 
+            }} />
+          </div>
+        </div>
+
+        {/* Tabs Skeleton */}
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', background: '#f1f5f9', padding: '0.5rem', borderRadius: '16px', width: 'fit-content' }}>
+          <div style={{ width: '180px', height: '42px', background: 'white', borderRadius: '12px' }} />
+          <div style={{ width: '160px', height: '42px', background: 'transparent', borderRadius: '12px' }} />
+        </div>
+
+        {/* Cards Skeleton */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', marginBottom: '3rem' }}>
+          <SkeletonCard height="150px" />
+          <SkeletonCard height="150px" />
+          <SkeletonCard height="150px" />
+        </div>
+
+        {/* Charts Skeleton */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+          <SkeletonCard height="400px" />
+          <SkeletonCard height="400px" />
+        </div>
+
+        <style>{`
+          @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+          }
+        `}</style>
       </div>
     );
   }
@@ -135,7 +216,7 @@ const InteractiveDashboard = () => {
       {/* Tabs */}
       <div className="dashboard-tabs">
         <button 
-          onClick={() => setActiveTab('economic')}
+          onClick={() => handleTabChange('economic')}
           style={{ 
             border: 'none', padding: '0.8rem 2.5rem', cursor: 'pointer',
             fontSize: '1rem', fontWeight: 700, 
@@ -149,7 +230,7 @@ const InteractiveDashboard = () => {
           📊 Impacto Econômico
         </button>
         <button 
-          onClick={() => setActiveTab('social')}
+          onClick={() => handleTabChange('social')}
           style={{ 
             border: 'none', padding: '0.8rem 2.5rem', cursor: 'pointer',
             fontSize: '1rem', fontWeight: 700, 
@@ -206,7 +287,7 @@ const InteractiveDashboard = () => {
               <h3 style={{ marginBottom: '2rem', fontSize: '1.25rem', fontWeight: 700 }}>Comparação Salarial Geográfica</h3>
               <div style={{ height: '350px' }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={ecoData.salaries_dist}>
+                  <BarChart data={salariesData}>
                     <defs>
                       <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.8}/>
@@ -229,7 +310,7 @@ const InteractiveDashboard = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={ecoData.remote_dist}
+                      data={remoteData}
                       cx="50%"
                       cy="50%"
                       innerRadius={80}
@@ -238,7 +319,7 @@ const InteractiveDashboard = () => {
                       dataKey="value"
                       stroke="none"
                     >
-                      {ecoData.remote_dist.map((entry, index) => (
+                      {remoteData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -263,7 +344,7 @@ const InteractiveDashboard = () => {
             <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>Distribuição de expertises técnicas mais procuradas e disponíveis.</p>
             <div style={{ height: '450px' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={socialData.top_skills} layout="vertical" margin={{ left: 40 }}>
+                <BarChart data={skillsData} layout="vertical" margin={{ left: 40 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f1f5f9" />
                   <XAxis type="number" hide />
                   <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fill: '#1e293b', fontWeight: 600, fontSize: '0.85rem'}} />

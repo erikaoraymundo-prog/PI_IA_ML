@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { auth, signInWithGoogle, logout, db, storage } from './firebase';
 import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, getDoc, collection, getDocs } from 'firebase/firestore';
@@ -8,8 +8,10 @@ import './index.css';
 import ProductPage from './pages/ProductPage';
 import LGPDPage from './pages/LGPDPage';
 import AboutPage from './pages/AboutPage';
-import InteractiveDashboard from './pages/InteractiveDashboard';
 import AgentePage from './pages/AgentePage';
+
+// Lazy load do Dashboard — Recharts (~200KB) só carrega quando o usuário acessar a aba
+const InteractiveDashboard = lazy(() => import('./pages/InteractiveDashboard'));
 
 const HERO_IMAGE_URL = "/hero_talent_match.png";
 
@@ -426,7 +428,34 @@ function App() {
       )}
 
       {currentPage === 'product' && <ProductPage />}
-      {currentPage === 'dashboard' && <InteractiveDashboard />}
+      {currentPage === 'dashboard' && (
+        <Suspense fallback={
+          <div className="container" style={{ padding: '4rem 1rem', minHeight: 'calc(100vh - 80px)' }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #004d5b 0%, #00a896 100%)',
+              borderRadius: '24px', padding: '3rem', marginBottom: '2rem',
+              position: 'relative', overflow: 'hidden'
+            }}>
+              <div style={{ position: 'relative', zIndex: 2 }}>
+                <div style={{ width: '350px', height: '2.8rem', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', marginBottom: '1rem' }} />
+                <div style={{ width: '500px', maxWidth: '100%', height: '1.1rem', background: 'rgba(255,255,255,0.15)', borderRadius: '8px' }} />
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+              {[1,2,3].map(i => (
+                <div key={i} style={{
+                  background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                  backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite',
+                  borderRadius: '20px', height: '150px'
+                }} />
+              ))}
+            </div>
+            <style>{`@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }`}</style>
+          </div>
+        }>
+          <InteractiveDashboard />
+        </Suspense>
+      )}
       {currentPage === 'agent' && <AgentePage user={user} onLoginRequired={() => setShowLoginModal(true)} />}
       {currentPage === 'lgpd' && <LGPDPage />}
       {currentPage === 'about' && <AboutPage />}
