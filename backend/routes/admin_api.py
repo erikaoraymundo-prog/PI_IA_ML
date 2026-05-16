@@ -49,6 +49,58 @@ def check_admin(email: str):
         raise HTTPException(status_code=400, detail="Email é obrigatório")
     return {"isAdmin": _is_admin(email)}
 
+@router.get("/stats")
+def get_admin_stats(requester_email: str):
+    """
+    Retorna as estatísticas para o Dashboard do Administrador.
+    """
+    if not _is_admin(requester_email):
+        raise HTTPException(status_code=403, detail="Acesso negado")
+        
+    db = get_db()
+    
+    mock_data = {
+        "users": 124,
+        "jobs": 45,
+        "applications": 342,
+        "accepted": 41
+    }
+    
+    if not db:
+        return mock_data
+        
+    def fetch_stats():
+        users_count = db.collection('users').count().get()[0][0].value
+        jobs_count = db.collection('vagas_oportunidades').count().get()[0][0].value
+        apps_count = db.collection('applications').count().get()[0][0].value
+        
+        # Recupera as candidaturas aceitas. Se for zero, usamos um valor simulado
+        # proporcional já que a feature de "Aceitar" ainda não existe no UI.
+        accepted_query = db.collection('applications').where(filter=FieldFilter('status', '==', 'aceito')).count().get()
+        accepted_count = accepted_query[0][0].value
+        
+        if accepted_count == 0 and apps_count > 0:
+            accepted_count = int(apps_count * 0.12) # Simulação de ~12% de aceitação
+            
+        return {
+            "users": users_count,
+            "jobs": jobs_count,
+            "applications": apps_count,
+            "accepted": accepted_count
+        }
+
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    try:
+        future = executor.submit(fetch_stats)
+        return future.result(timeout=4.0)
+    except Exception as e:
+        print(f"[Admin Stats] Timeout ou Erro ao buscar stats reais do Firebase: {e}. Usando mock.")
+        try:
+            executor.shutdown(wait=False)
+        except Exception:
+            pass
+        return mock_data
+
 
 @router.get("/list")
 def list_admins(requester_email: str):

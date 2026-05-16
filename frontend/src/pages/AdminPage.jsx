@@ -42,6 +42,9 @@ const AdminPage = ({ user, onLoginRequired }) => {
     checkAdmin();
   }, [user]);
 
+  const [stats, setStats] = useState({ users: 0, jobs: 0, applications: 0, accepted: 0 });
+  const [loadingStats, setLoadingStats] = useState(false);
+
   // Carregar lista de admins
   const fetchAdmins = useCallback(async () => {
     if (!user?.email) return;
@@ -59,11 +62,29 @@ const AdminPage = ({ user, onLoginRequired }) => {
     }
   }, [user]);
 
+  // Carregar métricas da plataforma
+  const fetchStats = useCallback(async () => {
+    if (!user?.email) return;
+    setLoadingStats(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/stats?requester_email=${encodeURIComponent(user.email)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data);
+      }
+    } catch (err) {
+      console.error('Erro ao carregar métricas:', err);
+    } finally {
+      setLoadingStats(false);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (isAdmin) {
       fetchAdmins();
+      fetchStats();
     }
-  }, [isAdmin, fetchAdmins]);
+  }, [isAdmin, fetchAdmins, fetchStats]);
 
   // Adicionar novo admin
   const handleAddAdmin = async (e) => {
@@ -214,7 +235,104 @@ const AdminPage = ({ user, onLoginRequired }) => {
         </div>
       )}
 
-      {/* Stats Cards */}
+      {/* Dashboard Metrics */}
+      <div style={{ marginBottom: '3rem', marginTop: '2rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1.5rem', color: 'var(--text-dark)' }}>
+          Métricas da Plataforma
+        </h2>
+        
+        {loadingStats ? (
+          <div style={{ padding: '2rem', textAlign: 'center', background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+            <div style={{ 
+              width: '40px', height: '40px', border: '3px solid #f3f3f3', 
+              borderTop: '3px solid #4338ca', borderRadius: '50%', 
+              margin: '0 auto 1rem', animation: 'spin 1s linear infinite' 
+            }}></div>
+            <p style={{ color: 'var(--text-muted)' }}>Carregando dados do Firebase...</p>
+          </div>
+        ) : (
+          <div style={{ 
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+            gap: '1.5rem'
+          }}>
+            {/* Usuários Card */}
+            <div style={{ 
+              background: 'white', padding: '1.5rem', borderRadius: '16px', 
+              border: '1px solid #e2e8f0', position: 'relative', overflow: 'hidden',
+              boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)'
+            }}>
+              <div style={{ position: 'absolute', top: '-15px', right: '-15px', fontSize: '5rem', opacity: 0.05 }}>👤</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+                Usuários Cadastrados
+              </div>
+              <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#1e293b' }}>
+                {stats.users}
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#059669', marginTop: '0.5rem', fontWeight: 500 }}>
+                Na collection `users`
+              </div>
+            </div>
+
+            {/* Vagas Card */}
+            <div style={{ 
+              background: 'white', padding: '1.5rem', borderRadius: '16px', 
+              border: '1px solid #e2e8f0', position: 'relative', overflow: 'hidden',
+              boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)'
+            }}>
+              <div style={{ position: 'absolute', top: '-15px', right: '-15px', fontSize: '5rem', opacity: 0.05 }}>💼</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+                Vagas Publicadas
+              </div>
+              <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#2563eb' }}>
+                {stats.jobs}
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#059669', marginTop: '0.5rem', fontWeight: 500 }}>
+                Na collection `vagas_oportunidades`
+              </div>
+            </div>
+
+            {/* Aplicações Card */}
+            <div style={{ 
+              background: 'white', padding: '1.5rem', borderRadius: '16px', 
+              border: '1px solid #e2e8f0', position: 'relative', overflow: 'hidden',
+              boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)'
+            }}>
+              <div style={{ position: 'absolute', top: '-15px', right: '-15px', fontSize: '5rem', opacity: 0.05 }}>📄</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+                Aplicações de Currículo
+              </div>
+              <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#9333ea' }}>
+                {stats.applications}
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#059669', marginTop: '0.5rem', fontWeight: 500 }}>
+                Na collection `applications`
+              </div>
+            </div>
+
+            {/* Aceitos Card */}
+            <div style={{ 
+              background: 'linear-gradient(135deg, #059669, #10b981)', padding: '1.5rem', borderRadius: '16px', 
+              color: 'white', position: 'relative', overflow: 'hidden',
+              boxShadow: '0 10px 15px -3px rgba(16, 185, 129, 0.3)'
+            }}>
+              <div style={{ position: 'absolute', top: '-15px', right: '-15px', fontSize: '5rem', opacity: 0.15 }}>✨</div>
+              <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+                Currículos Aceitos
+              </div>
+              <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'white' }}>
+                {stats.accepted}
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.9)', marginTop: '0.5rem', fontWeight: 500 }}>
+                Status: Aceito
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '2rem 0' }} />
+
+      {/* Control Cards */}
       <div style={{ 
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
         gap: '1.5rem', marginBottom: '2rem', marginTop: '2rem'

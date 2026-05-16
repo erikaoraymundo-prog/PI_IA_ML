@@ -274,6 +274,7 @@ function App() {
           jobTitle: match.job_title,
           resumeUrl: downloadURL,
           score: match.score,
+          status: 'pendente',
           appliedAt: new Date()
         });
       }
