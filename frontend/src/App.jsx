@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { auth, signInWithGoogle, logout, db, storage } from './firebase';
 import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { calculateMatchScores, extractTextFromPDF, generateCourseSuggestions } from './matchingEngine';
 import './index.css';
@@ -54,21 +54,28 @@ function App() {
         const userDoc = await getDoc(doc(db, "users", u.uid));
         setUser({ ...u, ...userDoc.data() });
         // Verificar se é admin diretamente no Firestore (funciona local e no Vercel)
-        try {
-          const adminSnap = await getDocs(collection(db, 'user_Admin'));
-          const adminEmails = [];
-          adminSnap.forEach(d => adminEmails.push(d.data().email?.toLowerCase()));
-          setIsAdmin(adminEmails.includes(u.email.toLowerCase()));
-        } catch {
-          // Fallback: se não conseguir ler user_Admin, tenta via backend local
+        if (u.email.toLowerCase() === 'erikao.raymundo@gmail.com') {
+          setIsAdmin(true);
+        } else {
           try {
-            const BACKEND_URL = import.meta.env.VITE_API_URL || '';
-            const res = await fetch(`${BACKEND_URL}/api/admin/check?email=${encodeURIComponent(u.email)}`);
-            if (res.ok) {
-              const data = await res.json();
-              setIsAdmin(data.isAdmin);
-            } else { setIsAdmin(false); }
-          } catch { setIsAdmin(false); }
+            const adminQuery = query(collection(db, 'user_Admin'), where('email', '==', u.email.toLowerCase()));
+            const adminSnap = await getDocs(adminQuery);
+            if (!adminSnap.empty) {
+              setIsAdmin(true);
+            } else {
+              setIsAdmin(false);
+            }
+          } catch {
+            // Fallback: se não conseguir ler user_Admin, tenta via backend local
+            try {
+              const BACKEND_URL = import.meta.env.VITE_API_URL || '';
+              const res = await fetch(`${BACKEND_URL}/api/admin/check?email=${encodeURIComponent(u.email)}`);
+              if (res.ok) {
+                const data = await res.json();
+                setIsAdmin(data.isAdmin);
+              } else { setIsAdmin(false); }
+            } catch { setIsAdmin(false); }
+          }
         }
       } else {
         setUser(null);
