@@ -73,6 +73,7 @@ h4,
   display: flex;
   gap: 2.5rem;
   align-items: center;
+  margin: 0 auto;
 }
 
 .nav-links a {
@@ -112,7 +113,7 @@ h4,
 .nav-wrapper {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  flex: 1;
 }
 
 .auth-group {
