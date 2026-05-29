@@ -13,6 +13,8 @@ import AgentePage from './pages/AgentePage';
 // Lazy load do Dashboard e Admin — só carregam quando o usuário acessar a aba
 const InteractiveDashboard = lazy(() => import('./pages/InteractiveDashboard'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
+const CandidatoDashboard = lazy(() => import('./pages/CandidatoDashboard'));
+const RecrutadorDashboard = lazy(() => import('./pages/RecrutadorDashboard'));
 
 const HERO_IMAGE_URL = "/hero_talent_match.png";
 
@@ -54,7 +56,7 @@ function App() {
         const userDoc = await getDoc(doc(db, "users", u.uid));
         setUser({ ...u, ...userDoc.data() });
         // Verificar se é admin diretamente no Firestore (funciona local e no Vercel)
-        if (u.email.toLowerCase() === 'erikao.raymundo@gmail.com') {
+        if (u.email.toLowerCase() === 'erikao.raymundo@gmail.com' || u.email.toLowerCase() === 'guroberto.dev@gmail.com') {
           setIsAdmin(true);
         } else {
           try {
@@ -322,6 +324,16 @@ function App() {
               <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('lgpd'); setIsMenuOpen(false); }} className={currentPage === 'lgpd' ? 'active' : ''}>LGPD</a>
               <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('about'); setIsMenuOpen(false); }} className={currentPage === 'about' ? 'active' : ''}>Sobre Nós</a>
               {isAdmin && <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('admin'); setIsMenuOpen(false); }} className={currentPage === 'admin' ? 'active' : ''} style={{ color: currentPage === 'admin' ? '#4338ca' : undefined }}>⚙️ Admin</a>}
+              {user && user.userType === 'candidato' && (
+                <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('candidato_dashboard'); setIsMenuOpen(false); }} className={currentPage === 'candidato_dashboard' ? 'active' : ''} style={{ color: currentPage === 'candidato_dashboard' ? '#00a896' : undefined }}>
+                  💼 Minhas Candidaturas
+                </a>
+              )}
+              {user && user.userType === 'empresa' && (
+                <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('recrutador_dashboard'); setIsMenuOpen(false); }} className={currentPage === 'recrutador_dashboard' ? 'active' : ''} style={{ color: currentPage === 'recrutador_dashboard' ? '#00a896' : undefined }}>
+                  🏢 Painel do Recrutador
+                </a>
+              )}
             </div>
             <div className="auth-group">
               {user ? (
@@ -497,6 +509,28 @@ function App() {
           </div>
         }>
           <AdminPage user={user} onLoginRequired={() => setShowLoginModal(true)} />
+        </Suspense>
+      )}
+      {currentPage === 'candidato_dashboard' && (
+        <Suspense fallback={
+          <div className="container" style={{ padding: '8rem 2rem', textAlign: 'center', minHeight: '80vh' }}>
+            <div style={{ width: '50px', height: '50px', border: '4px solid #f3f3f3', borderTop: '4px solid #00a896', borderRadius: '50%', margin: '0 auto 1.5rem', animation: 'spin 1s linear infinite' }}></div>
+            <p style={{ color: 'var(--text-muted)' }}>Carregando painel de candidaturas...</p>
+            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          </div>
+        }>
+          <CandidatoDashboard user={user} />
+        </Suspense>
+      )}
+      {currentPage === 'recrutador_dashboard' && (
+        <Suspense fallback={
+          <div className="container" style={{ padding: '8rem 2rem', textAlign: 'center', minHeight: '80vh' }}>
+            <div style={{ width: '50px', height: '50px', border: '4px solid #f3f3f3', borderTop: '4px solid #00a896', borderRadius: '50%', margin: '0 auto 1.5rem', animation: 'spin 1s linear infinite' }}></div>
+            <p style={{ color: 'var(--text-muted)' }}>Carregando painel de recrutamento...</p>
+            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          </div>
+        }>
+          <RecrutadorDashboard user={user} />
         </Suspense>
       )}
 

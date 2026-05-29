@@ -191,3 +191,150 @@ async def match_resume(file: UploadFile = File(...)):
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
         raise HTTPException(status_code=500, detail=str(e))
+
+from pydantic import BaseModel
+
+class UpdateStatusInput(BaseModel):
+    app_id: str
+    status: str
+
+@router.post("/update-status")
+async def update_application_status(payload: UpdateStatusInput):
+    """
+    Atualiza o status de uma candidatura no Firestore
+    e notifica o candidato por e-mail (simulado + log de email).
+    """
+    db = get_db()
+    if not db:
+        raise HTTPException(status_code=503, detail="Firestore indisponível.")
+    
+    app_id = payload.app_id
+    new_status = payload.status
+    
+    try:
+        app_ref = db.collection('applications').document(app_id)
+        app_doc = app_ref.get()
+        if not app_doc.exists:
+            raise HTTPException(status_code=404, detail="Candidatura não encontrada.")
+            
+        app_data = app_doc.to_dict()
+        user_email = app_data.get('userEmail')
+        user_name = app_data.get('userFullName', 'Candidato')
+        job_title = app_data.get('jobTitle', 'Vaga')
+        
+        # Atualiza status no banco
+        app_ref.update({"status": new_status})
+        
+        # Envia e-mail de notificação se e-mail estiver disponível (simulado + log de email + SMTP se disponível)
+        if user_email:
+            _send_email_notification_simulated(user_email, user_name, job_title, new_status)
+        else:
+            print(f"[STATUS-UPDATE] Candidatura {app_id} sem e-mail associado. Atualizada no banco mas sem disparo de e-mail.")
+        
+        return {"success": True, "message": f"Status atualizado para {new_status}."}
+    except Exception as e:
+        print(f"[STATUS-UPDATE] Erro: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao atualizar status: {str(e)}")
+
+def _send_email_notification_simulated(email_to: str, name: str, job_title: str, new_status: str):
+    # Traduz status para português amigável
+    status_pt = {
+        "pendente": "Recebido (Em triagem)",
+        "analisando": "Em Análise pelo Recrutador",
+        "aceito": "Aprovado / Contratado!",
+        "rejeitado": "Finalizado (Não selecionado nesta etapa)"
+    }.get(new_status.lower(), new_status)
+    
+    email_body = f"""
+========================================================================
+📧 NOTIFICAÇÃO DE E-MAIL ENVIADA (SIMULADO)
+========================================================================
+De: no-reply@globaltalentbridge.com
+Para: {email_to}
+Assunto: globalTalentBridge - Atualização do Processo Seletivo (Vaga: {job_title})
+
+Olá, {name}!
+
+Temos novidades sobre o seu processo seletivo para a vaga:
+📌 {job_title}
+
+O status da sua candidatura foi atualizado para:
+👉 {status_pt}
+
+Você pode acompanhar todo o progresso diretamente no seu painel "Minhas Candidaturas"
+em nossa plataforma.
+
+Agradecemos o seu interesse e participação.
+
+Atenciosamente,
+Equipe globalTalentBridge
+========================================================================
+"""
+    # 1. Print no terminal do Uvicorn (seguro contra erro de encoding no console do Windows)
+    try:
+        print(email_body)
+    except UnicodeEncodeError:
+        # Fallback substituindo emojis e caracteres especiais por "?" para não quebrar a execução
+        safe_body = email_body.encode('ascii', errors='replace').decode('ascii')
+        print(safe_body)
+    
+    # 2. Grava em um arquivo de log local no projeto
+    try:
+        log_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        log_path = os.path.join(log_dir, "email_notifications_log.txt")
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(email_body + "\n")
+        print(f"[EMAIL] Log gravado com sucesso em: {log_path}")
+    except Exception as e:
+        print(f"[EMAIL] Erro ao gravar arquivo de log: {e}")
+
+    # 3. Tenta enviar via SMTP real se configurado nas variáveis de ambiente
+    smtp_host = os.getenv("SMTP_HOST")
+    smtp_port = os.getenv("SMTP_PORT", "587")
+    smtp_user = os.getenv("SMTP_USER")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+    
+    if smtp_host:
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            
+            sender_email = smtp_user or "no-reply@globaltalentbridge.com"
+            
+            msg = MIMEMultipart()
+            msg['From'] = sender_email
+            msg['To'] = email_to
+            msg['Subject'] = f"globalTalentBridge - Atualização do Processo Seletivo (Vaga: {job_title})"
+            
+            # HTML template simplificado
+            html = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+              <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h2 style="color: #00a896; border-bottom: 2px solid #00a896; padding-bottom: 10px;">globalTalentBridge</h2>
+                <p>Olá, <strong>{name}</strong>!</p>
+                <p>Temos novidades sobre o seu processo seletivo para a vaga: <strong>{job_title}</strong>.</p>
+                <p>O status da sua candidatura foi atualizado para: <span style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 6px; font-weight: bold;">{status_pt}</span></p>
+                <p>Você pode acompanhar todos os detalhes acessando a plataforma e abrindo a aba "Minhas Candidaturas".</p>
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                <p style="font-size: 0.8rem; color: #666;">Equipe globalTalentBridge &bull; Projeto Integrador IA/ML 2026</p>
+              </div>
+            </body>
+            </html>
+            """
+            msg.attach(MIMEText(html, 'html'))
+            
+            server = smtplib.SMTP(smtp_host, int(smtp_port))
+            if smtp_port == "587":
+                server.starttls()
+            
+            # Autentica apenas se usuário e senha foram fornecidos (relays corporativos pulam isso)
+            if smtp_user and smtp_password:
+                server.login(smtp_user, smtp_password)
+                
+            server.sendmail(sender_email, email_to, msg.as_string())
+            server.quit()
+            print(f"[EMAIL] E-mail real enviado com sucesso para {email_to} via {smtp_host}")
+        except Exception as smtp_err:
+            print(f"[EMAIL] Erro ao enviar e-mail real via SMTP ({smtp_host}): {smtp_err}")
