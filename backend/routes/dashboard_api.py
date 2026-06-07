@@ -2,6 +2,8 @@ from fastapi import APIRouter
 from backend.firebase_config import get_db
 import concurrent.futures
 import time
+import os
+import json
 
 router = APIRouter()
 
@@ -29,7 +31,7 @@ MOCK_ECONOMIC_DATA = {
         {"Country": "Brazil", "Salario": 12000},
         {"Country": "Spain", "Salario": 18000},
         {"Country": "Bolivia", "Salario": 24000},
-        {"Country": "USA", "Salario": 80000},
+        {"Country": "United States of America", "Salario": 80000},
         {"Country": "China", "Salario": 110000},
         {"Country": "Canada", "Salario": 150000},
         {"Country": "Germany", "Salario": 60000},
@@ -56,130 +58,33 @@ MOCK_SOCIAL_DATA = {
     ]
 }
 
+DATA_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "dashboard_data.json")
+
+def load_real_data():
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"[Dashboard] Erro ao carregar {DATA_FILE}: {e}")
+    return None
+
 @router.get("/economic")
 def get_economic_impact():
     """
-    Retorna dados econômicos para o dashboard.
-    Usa cache em memória (TTL 5min) para evitar queries repetidas ao Firebase.
-    Se Firebase desativado ou indisponível, retorna Mock Data instantaneamente.
+    Retorna dados econômicos para o dashboard obtidos da base real survey_results_public.csv.
     """
-    import os
-    if os.getenv("USE_FIREBASE_DASHBOARD", "false").lower() != "true":
-        return MOCK_ECONOMIC_DATA
-
-    # Verificar cache primeiro
-    cached = _get_cached("economic")
-    if cached is not None:
-        return cached
-        
-    def fetch_firebase():
-        db = get_db()
-        if not db:
-            raise Exception("No DB")
-        jobs_ref = db.collection('jobs').limit(100).stream()
-        remote_count = 0
-        presencial_count = 0
-        total_jobs = 0
-        
-        for job in jobs_ref:
-            data = job.to_dict()
-            total_jobs += 1
-            is_remote = data.get('isRemote', False) or data.get('remote_allowed', False)
-            location = data.get('location', '').lower()
-            if is_remote or 'remoto' in location or 'remote' in location:
-                remote_count += 1
-            else:
-                presencial_count += 1
-        return total_jobs, remote_count, presencial_count
-
-    try:
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-        future = executor.submit(fetch_firebase)
-        total_jobs, remote_count, presencial_count = future.result(timeout=3.0)
-        executor.shutdown(wait=False)
-        
-        if total_jobs > 10:
-            result = MOCK_ECONOMIC_DATA.copy()
-            result["remote_dist"] = [
-                {"name": "Remoto", "value": remote_count},
-                {"name": "Presencial", "value": presencial_count}
-            ]
-            _set_cache("economic", result)
-            return result
-            
-        _set_cache("economic", MOCK_ECONOMIC_DATA)
-        return MOCK_ECONOMIC_DATA
-    except concurrent.futures.TimeoutError:
-        print("Timeout ao buscar dados no Firebase. Retornando Mock Data.")
-        executor.shutdown(wait=False)
-        return MOCK_ECONOMIC_DATA
-    except Exception as e:
-        print(f"Erro ao buscar economic data no firebase: {e}")
-        try:
-            executor.shutdown(wait=False)
-        except Exception:
-            pass
-        return MOCK_ECONOMIC_DATA
+    real_data = load_real_data()
+    if real_data and "economic" in real_data:
+        return real_data["economic"]
+    return MOCK_ECONOMIC_DATA
 
 @router.get("/social")
 def get_social_impact():
     """
-    Retorna dados sociais para o dashboard.
-    Usa cache em memória (TTL 5min) para evitar queries repetidas ao Firebase.
+    Retorna dados sociais para o dashboard obtidos da base real resume_data.csv.
     """
-    import os
-    if os.getenv("USE_FIREBASE_DASHBOARD", "false").lower() != "true":
-        return MOCK_SOCIAL_DATA
-
-    # Verificar cache primeiro
-    cached = _get_cached("social")
-    if cached is not None:
-        return cached
-        
-    def fetch_users():
-        db = get_db()
-        if not db:
-            raise Exception("No DB")
-        users_ref = db.collection('users').limit(50).stream()
-        skills_counter = {}
-        total_users = 0
-        
-        for user in users_ref:
-            data = user.to_dict()
-            total_users += 1
-            skills = data.get('skills', [])
-            if isinstance(skills, str):
-                skills = [s.strip() for s in skills.split(',')]
-                
-            for skill in skills:
-                if skill:
-                    skills_counter[skill] = skills_counter.get(skill, 0) + 1
-        return total_users, skills_counter
-
-    try:
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-        future = executor.submit(fetch_users)
-        total_users, skills_counter = future.result(timeout=3.0)
-        executor.shutdown(wait=False)
-        
-        if total_users > 5 and skills_counter:
-            sorted_skills = sorted(skills_counter.items(), key=lambda x: x[1], reverse=True)[:15]
-            result = {
-                "top_skills": [{"name": k, "count": v} for k, v in sorted_skills]
-            }
-            _set_cache("social", result)
-            return result
-            
-        _set_cache("social", MOCK_SOCIAL_DATA)
-        return MOCK_SOCIAL_DATA
-    except concurrent.futures.TimeoutError:
-        print("Timeout ao buscar dados sociais no Firebase. Retornando Mock Data.")
-        executor.shutdown(wait=False)
-        return MOCK_SOCIAL_DATA
-    except Exception as e:
-        print(f"Erro ao buscar social data no firebase: {e}")
-        try:
-            executor.shutdown(wait=False)
-        except Exception:
-            pass
-        return MOCK_SOCIAL_DATA
+    real_data = load_real_data()
+    if real_data and "social" in real_data:
+        return real_data["social"]
+    return MOCK_SOCIAL_DATA

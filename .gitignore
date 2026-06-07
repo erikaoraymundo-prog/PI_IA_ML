@@ -36,3 +36,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Large data bases
+backend/data/
+

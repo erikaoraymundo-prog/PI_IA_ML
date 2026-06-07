@@ -1,0 +1,665 @@
+{
+  "economic": {
+    "median_br": 27306,
+    "median_usa": 150000,
+    "upside": 449,
+    "salaries_dist": [
+      {
+        "Country": "United States of America",
+        "Salario": 150000
+      },
+      {
+        "Country": "Germany",
+        "Salario": 81210
+      },
+      {
+        "Country": "United Kingdom of Great Britain and Northern Ireland",
+        "Salario": 94618
+      },
+      {
+        "Country": "India",
+        "Salario": 17029
+      },
+      {
+        "Country": "France",
+        "Salario": 63228
+      },
+      {
+        "Country": "Canada",
+        "Salario": 87550
+      },
+      {
+        "Country": "Ukraine",
+        "Salario": 25021
+      },
+      {
+        "Country": "Brazil",
+        "Salario": 27306
+      },
+      {
+        "Country": "Netherlands",
+        "Salario": 81210
+      },
+      {
+        "Country": "Poland",
+        "Salario": 60038
+      },
+      {
+        "Country": "Italy",
+        "Salario": 47566
+      },
+      {
+        "Country": "Australia",
+        "Salario": 97514
+      },
+      {
+        "Country": "Spain",
+        "Salario": 62648
+      },
+      {
+        "Country": "Sweden",
+        "Salario": 70440
+      },
+      {
+        "Country": "Switzerland",
+        "Salario": 142592
+      },
+      {
+        "Country": "Czech Republic",
+        "Salario": 60660
+      },
+      {
+        "Country": "Austria",
+        "Salario": 78310
+      },
+      {
+        "Country": "Denmark",
+        "Salario": 98678
+      },
+      {
+        "Country": "Belgium",
+        "Salario": 69609
+      },
+      {
+        "Country": "Portugal",
+        "Salario": 60908
+      }
+    ],
+    "remote_dist": [
+      {
+        "name": "Remoto",
+        "value": 15246
+      },
+      {
+        "name": "Presencial",
+        "value": 108603
+      }
+    ]
+  },
+  "social": {
+    "top_skills": [
+      {
+        "name": "Python",
+        "count": 3612
+      },
+      {
+        "name": "Machine Learning",
+        "count": 3220
+      },
+      {
+        "name": "SQL",
+        "count": 1708
+      },
+      {
+        "name": "Data Analysis",
+        "count": 1456
+      },
+      {
+        "name": "Excel",
+        "count": 1438
+      },
+      {
+        "name": "Deep Learning",
+        "count": 1316
+      },
+      {
+        "name": "Java",
+        "count": 1148
+      },
+      {
+        "name": "C++",
+        "count": 1148
+      },
+      {
+        "name": "Artificial Intelligence",
+        "count": 952
+      },
+      {
+        "name": "Natural Language Processing",
+        "count": 952
+      },
+      {
+        "name": "Tableau",
+        "count": 840
+      },
+      {
+        "name": "Data Science",
+        "count": 812
+      },
+      {
+        "name": "Data Mining",
+        "count": 784
+      },
+      {
+        "name": "Microsoft Office",
+        "count": 784
+      },
+      {
+        "name": "Data Analytics",
+        "count": 728
+      }
+    ],
+    "resumes_sample": [
+      {
+        "job_position_name": "Senior Software Engineer",
+        "locations": "['N/A']",
+        "skills": "Big Data, Hadoop, Hive, Python, Mapreduce, Spark, Java, Machine Learning, Cloud, Hdfs, YARN, Core Java, Data Science, C++, Data Structures, DBMS, RDBMS, Informatica, Talend, Amazon Redshift, Microsoft Azure"
+      },
+      {
+        "job_position_name": "Machine Learning (ML) Engineer",
+        "locations": "['N/A']",
+        "skills": "Data Analysis, Data Analytics, Business Analysis, R, SAS, PowerBi, Tableau, Data Visualization, Business Analytics, Machine Learning"
+      },
+      {
+        "job_position_name": "Executive/ Senior Executive- Trade Marketing, Hygiene Products",
+        "locations": "['N/A']",
+        "skills": "Software Development, Machine Learning, Deep Learning, Risk Assessment, Requirement Gathering, Application Support, JavaScript, Python, Docker, HTML, Hive, CSS, C, C++"
+      },
+      {
+        "job_position_name": "Business Development Executive",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State', 'City, State', 'N/A']",
+        "skills": "accounts payables, accounts receivables, Accounts Payable, Accounts Receivable, administrative functions, trial balance, banking, budget, bi, closing, Computer Applications, Credit, clients, Customer Service, data entry, delivery, driving, email, insurance, inventory, ledger, Access, Excel, Outlook, PowerPoint, Word, mortgage loan, Enterprise, policies, QuickBooks, Sales, sales reports, telecommunications, phone, workflow, written"
+      },
+      {
+        "job_position_name": "Senior iOS Engineer",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "Analytical reasoning, Compliance testing knowledge, Effective time management, Public and private accounting, accounting, accounting systems, accounts payable, accounts receivable, administrative, AR, billing, closing, client, clients, documentation, financial, financial reports, preparation of financial reports, Preparation of financial statements, fixed assets, managing, month-end closing, policies, maintain records, reporting, Research, sales, tax, taxes, tax returns, annual reports, year-end"
+      },
+      {
+        "job_position_name": "AI Engineer",
+        "locations": "['City, State', 'City, State', 'N/A']",
+        "skills": "Microsoft Applications, Network Security, Networking, PC hardware and software installation, configuration, and troubleshooting, Remote Desktop and Help Desk Management, Verbal Communication, Technical Support, Team Leadership, Programming Languages, On-call tech support, Windows & Mac OS, Wiring/Wire Spicing: Cat3, Cat5, Cat5e, Coaxial, Management, VoIP, TCP/IP, IPSec, ATM, SS7, IPX, DNS, BIND, DHCP, HSRP and LAN/WAN architecture, Application Development, Voice Over IP Telephone, Inventory Management"
+      },
+      {
+        "job_position_name": "Senior iOS Engineer",
+        "locations": "['N/A']",
+        "skills": "Machine Learning, Linear Regression, Ridge Regression, Lasso Regression, Tableau, Time Series Analysis"
+      },
+      {
+        "job_position_name": "Senior iOS Engineer",
+        "locations": "['City, State', 'City, State', 'City, State']",
+        "skills": "Maintenance, Corrective Maintenance, Documentation, Industrial Machinery, Preventive Maintenance, Sensors, Biotechnology, Electrical Mechanical, Estimation, Hydraulics, Mechanical Technician, Pneumatics, Project Manager, Sop, Manufacturing Process, Apqp, Assembly, Circuit Boards, Dmm, Electrical Test, Esd, First Article Inspection, Inspection, Medical Devices, Oscilloscope, Production Process, Schematic, Soldering, Surface Mount, Test Engineer, Through-hole, Wiring, Calibration, Control Systems, Packaging, Process Control, Sensor, Temperature, And Humidity, Control System Design, Electrical Engineer, Engineer, Entry Level, Ieee, Mechanical/electrical Engineer, Proactive, Self Motivated, Testing, Training, Electrical Engineering, Pr, Public Relations"
+      },
+      {
+        "job_position_name": "Mechanical Engineer",
+        "locations": "['N/A']",
+        "skills": "Python, Machine Learning, MySQL, Data Mining, Deep Learning, Data Analysis, Computer Vision, Flask API, Predictive Modeling, AWS, Scikit-Learn, Numpy, Statistical Analysis, Multivariate Analysis, Decision Trees, Random Forest, Xgboost, NLP"
+      },
+      {
+        "job_position_name": "Business Development Executive",
+        "locations": "['N/A']",
+        "skills": "Django, Python, Relational databases, RestAPI, Github, Jira, PostgreSQL, Software development, Debugging, Machine learning, Natural language Processing, Artificial Intelligence, Data Analysis, Docker, Tornado, Software Developer, Project Management"
+      },
+      {
+        "job_position_name": "Mechanical Designer",
+        "locations": "['City, State', 'City, State', 'City, State']",
+        "skills": "Microsoft Office Suite, VideoScribe Software, PeopleSoft Finance Applications, Accounting, billing, Change Management, contracts, Client Relations, Database, delivery, Eclipse, Finance, financial reporting, financial statements, Front Office, hiring, instructor, Instructional Design, Leadership training, logistics, managing, needs analysis, payables, PeopleSoft HRMS, PeopleSoft, personnel, Program Management, Project Management, project plans, Teaching, training materials, training design and development, training material, training programs, upgrade, view"
+      },
+      {
+        "job_position_name": "Asst. Manager/ Manger (Administrative)",
+        "locations": "['N/A']",
+        "skills": "R, Python, Tableau, Power BI, SQL, SAS, Deep Learning, Neural Networks, Artificial Intelligence"
+      },
+      {
+        "job_position_name": "Machine Learning (ML) Engineer",
+        "locations": "['N/A', 'N/A']",
+        "skills": "Data Analytics, Linear Regression, Logistic Regression, Business Intelligence, Business Analysis, GraphQL, Python"
+      },
+      {
+        "job_position_name": "Mechanical Designer",
+        "locations": "['N/A', 'N/A']",
+        "skills": "C, C++, Python, JAVA, HTML, CSS, JavaScript, Data Structures, SQL, PyCharm, Jupyter Notebook, Google Colab, Code Blocks, MATLAB, Turbo C++, MS Office, Scikit-Learn, TensorFlow, OpenCV, NumPy, Pytesseract, Keras"
+      },
+      {
+        "job_position_name": "Mechanical Engineer",
+        "locations": "['San Jose, CA', 'Milpitas, CA']",
+        "skills": "Java, Spring, Javascript, CSS, HTML, REST APIs, React Native, Kotlin, PostgreSQL, MySQL"
+      },
+      {
+        "job_position_name": "Database Administrator (DBA)",
+        "locations": "['N/A']",
+        "skills": "Machine Learning, Method Development, Artificial Intelligence, Data Modeling, Data Visualization, Data Validation, Deep Learning, MySQL, MongoDB, Python, Plotly, Seaborn, Matplotlib"
+      },
+      {
+        "job_position_name": "System Administrator (Operation & Maintenance of Server, Storage & Service Desk System)",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "budget, hardware, network systems, database, Dec, documentation, inspection, logistics, meetings, MS Excel, Microsoft Office, Outlook, PowerPoint, network, networking, Operating Systems, Oracle, personnel, presentations, progress, quality, Maintain documentation, routers, safety, scheduling, shipping, spreadsheets, supervision"
+      },
+      {
+        "job_position_name": "Executive/ Senior Executive- Trade Marketing, Hygiene Products",
+        "locations": "['N/A']",
+        "skills": "Artificial Intelligence, Deep Learning, Reinforcement Learning, Tensorflow Keras, Scikit learn, Numpy, Pandas, Matplotlib"
+      },
+      {
+        "job_position_name": "Project Coordinator (Civil)",
+        "locations": "['San Jose, CA', 'Milpitas, CA']",
+        "skills": "Java, Spring, Javascript, CSS, HTML, REST APIs, React Native, Kotlin, PostgreSQL, MySQL"
+      },
+      {
+        "job_position_name": "Executive/ Sr. Executive -IT",
+        "locations": "['N/A']",
+        "skills": "Machine learning, Data Science, Deep Learning, Decision Trees, Random Forest, XGBoost, CATBoost, Classification, Regression, Scikit Learn, Numpy, Pandas, OpenCV, Python, Matplotlib, Loss Optimization"
+      },
+      {
+        "job_position_name": "Mechanical Engineer",
+        "locations": "['City , State', 'City , State', 'City , State']",
+        "skills": "Aderant/CMS, Excel, QuickBooks Pro, SQL, Access, Peachtree, Hyperion Essbase, Financial reporting, US GAAP principles, IFRS, Bookkeeping, Budget development, Individual tax returns"
+      },
+      {
+        "job_position_name": "Network Support Engineer",
+        "locations": "['City , State', 'City , State', 'City , State']",
+        "skills": "ArcView, AutoCad, Drafting, GPS, graphic, Inspection, Microsoft Access, Microstation, File Maintenance, repairs, supervision, surveys, utilities"
+      },
+      {
+        "job_position_name": "Executive/ Senior Executive- Trade Marketing, Hygiene Products",
+        "locations": "['N/A']",
+        "skills": "Python, Machine Learning, Deep Learning, Data Analysis, Computer Vision, AWS, Scikit-Learn, Numpy, Java, C++, SAP"
+      },
+      {
+        "job_position_name": "Intern (Generative AI Engineering - 2D/3D Image Generation)",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "Material Management, Law Enforcement, mechanical test equipment, PC's, MS Office, 10key by touch, Customer Service, Forklift and Crane Certification, Self-motivation, Leadership, NDT Level II, mechanical theory, pneumatic and hydraulic theory, automation, closing, coaching, oral, hardware, customer support, designing, direction, hand tools, inventory, ISO 9001, Machinery, materials, mechanical, personnel, processes, Procurement, programming, progress, quality, Quality Control, Receiving, repairs, repairing, research, robotic systems, safety, scheduling, shipping, simulation, Supervisor, Test Equipment, Troubleshooting, written, articles"
+      },
+      {
+        "job_position_name": "Executive - VAT",
+        "locations": "[None]",
+        "skills": "Data Analysis, Business Analysis, Machine Learning, Regression Analysis, Time Series Analysis, SQL, Base SAS, Python, NLP, Credit Risk, Tableau, Statistical Analysis, Data Visualization, Data Science, R, Power Bi"
+      },
+      {
+        "job_position_name": "Mechanical Engineer",
+        "locations": "['Princeton, NJ', 'Remote', 'Cherry Hill, NJ']",
+        "skills": "HTML, CSS, JavaScript (Angular), Python, Git, Algorithm Design, Technical Writing, Data Analysis, Interpersonal Communication, Patience"
+      },
+      {
+        "job_position_name": "Sr.Officer / Executive - Internal Audit",
+        "locations": "['N/A']",
+        "skills": "Econometrics, Problem Solving, Data Analytics, Data Modeling, Data Validation, Data Reporting, Business Intelligence, Data Manipulation, Data Mining, Machine Learning, R Programming, SQL, Oracle, Scorecard, IFRS"
+      },
+      {
+        "job_position_name": "Management Trainee - Mechanical",
+        "locations": "['N/A']",
+        "skills": "Software Development, Machine Learning, Deep Learning, Risk Assessment, Requirement Gathering, Application Support, JavaScript, Python, Docker, HTML, Hive, CSS, C, C++"
+      },
+      {
+        "job_position_name": "Machine Learning (ML) Engineer",
+        "locations": "['City , State', 'City , State', 'City , State', 'City , State']",
+        "skills": "API, Approach, ATL, audio, backup, broadcast, C++, CLI, com, CA, Hardware, concept, Content, clients, documentation, dynamic HTML5, editing, XML, FTP, functional, drawing, GUI, http, IDs, Innovation, explorer, IP, JavaScript, json, LAN, MB, C#, MFC, office, Win, Windows, 2000, migration, NAS, OOP, page, Proxy, rendering, SAN, Scrum, servers, specification, team management, threads, troubleshoot, Video, Video Editing, Visual C++, workflow, writer"
+      },
+      {
+        "job_position_name": "AI Engineer",
+        "locations": "['N/A']",
+        "skills": "Machine Learning, Method Development, Artificial Intelligence, Data Modeling, Data Visualization, Data Validation, Deep Learning, MySQL, MongoDB, Python, Plotly, Seaborn, Matplotlib"
+      },
+      {
+        "job_position_name": "HR Officer",
+        "locations": "[None]",
+        "skills": "Deep Learning, Machine Learning, Artificial Intelligence, Linear Regression, Software Engineering, Python, Java, SAP, C, C++, Jenkins, Kubernetes, Docker, Backend"
+      },
+      {
+        "job_position_name": "DevOps Engineer",
+        "locations": "['N/A', 'N/A', 'N/A']",
+        "skills": "C++, Python, .Ney(VB, ASP), CSS, Javascript, Visual Basic, Visual FoxPro, Analytical Process Improvement, Risk Assessment & Tracking, Data & Network Management, Scrum & Agile"
+      },
+      {
+        "job_position_name": "Executive/ Senior Executive- Trade Marketing, Hygiene Products",
+        "locations": "['City, State', 'City, State', 'City, State']",
+        "skills": "Operations management, Change management, Inventory control, Policy/program development, Supervision and training, Sound judgment, Computersavvy, Calm under pressure, Complex problem solving, Motivational, Continuous Improvement, Out of the box thinking, Analytical and logical, Strong Leadership skills, Lean Manufacturing and Management, Six Sigma tools and methodologies, RCM, FMEA, DMAIC, PFD, Six Sigma Certified, Microsoft Office 2003-2011, Microsoft Visio, 2008-2010, Business Objects, SAP, Apple Lion, Pages, Keynote, Numbers, Microsoft Access 2010, Visual Studio 2008-2010, Microsoft Project, Netbeans, TextPad, SQL Server 2008, PowerSteering, Tango, HTML, Css, Java, Java Script, C++, VB.NET, ASP.NET, Web Design 1, Web Design 2, Algorithms, Software Engineering, VB.NET, ASP.NET, Apple, Budget Management, Business Objects, C++, Calculator, Coach, interpersonal skills, Continuous Improvement, Css, client, customer relations, customer service, documentation, Facilities Management, Financial Reporting, GUI, HTML, Human Resource Management, HR, Inventory, inventory levels, Inventory Control, Java, Java 1, Java 2, Java Script, Leadership skills, Lean Manufacturing, managing, manufacturing process, materials, Microsoft Access, Microsoft Office, Microsoft Project, Microsoft Visio, Works, personnel, policies, problem-solving skills, processes, project management, Purchasing, quality, maintain records, re-engineering, repairs, reporting, safety, SAP, Six Sigma, Software Engineering, software training, SQL Server, supervision, supply chain, supply chain management, Tango, user support, Visual Studio, water treatment, Web Design 1, Web Design 2, websites"
+      },
+      {
+        "job_position_name": "Senior iOS Engineer",
+        "locations": "['N/A']",
+        "skills": "Data Analytics, Natural Language Processing, Production Engineering, Production Analytics, Tableau, Machine Learning, Python, NLTK"
+      },
+      {
+        "job_position_name": "Executive/ Sr. Executive -IT",
+        "locations": "[None, None, None, None, None]",
+        "skills": "Python, Java, Julia, R, Matlab, Unix Shell Scripting (bash), Linux, Mac OSX, Windows, LATEX, Weka"
+      },
+      {
+        "job_position_name": "System Administrator (Operation & Maintenance of Server, Storage & Service Desk System)",
+        "locations": "['N/A']",
+        "skills": "Machine Learning Engineer, C++, Technical Documentation, Natural Language Processing, SQL, Tableau, Python, AWS, Azure, SAP, OracleDB, Heroku"
+      },
+      {
+        "job_position_name": "AI Engineer",
+        "locations": "['N/A']",
+        "skills": "Data Analysis, Business Analysis, Statistical Analysis, Regression Analysis, Natural Language Processing, Machine Learning, Numerical Analysis"
+      },
+      {
+        "job_position_name": "Executive - VAT",
+        "locations": "['N/A']",
+        "skills": "Data Scientist, Machine Learning, Python, Big Data, SQL, PySpark, Scala, Hive, Scikit Learn, Pandas, Matplotlib, Natural Language Processing, Transformers, BERT"
+      },
+      {
+        "job_position_name": "Data Engineer",
+        "locations": "['Hammond, LA', 'Covington, LA']",
+        "skills": "CPR & First Aid Certified, Proficient in Microsoft Word, Basic knowledge of Microsoft PowerPoint and Excel"
+      },
+      {
+        "job_position_name": "AI Engineer",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "accounts receivable, AIA, bank reconciliation, billing, billings, budgets, daily cash receipts, cash flow, Consultant, Contracts, Controller, clients, financial, financial reports, financial statements, Forms, General Ledger, general ledger accounts, Government, insurance, meetings, excel, Microsoft office applications, office, PowerPoint, Pivot tables, presentations, Prime, progress, proposals, Express, reporting, spreadsheet, tax, Timberline"
+      },
+      {
+        "job_position_name": "Management Trainee - Mechanical",
+        "locations": "['City, State', 'City, State', 'City, State']",
+        "skills": "Administrative support, AP, Critical thinking, Doors, Engineer, Senior Management, Forms, Functional, Leadership, Machinery, Navy, Oil, Organizational, Pearl, Personnel, Personnel management, Pick, Problem solving, Progress, Project management, Proposals, Quality assurance, Repairs, Reporting, Requirement, Switches, Time management, Troubles, Technical review, Blueprint understanding, Project support, Document control, Engineering operational functions, SharePoint, Manufacturing systems integration, Team management"
+      },
+      {
+        "job_position_name": "Executive/ Sr. Executive -IT",
+        "locations": "['N/A']",
+        "skills": "Neural Networks, Python, Postgresql, Django, Microsoft Azure, Flask, Hive, Kafka, Business Analysis, Machine Learning, Deep Learning"
+      },
+      {
+        "job_position_name": "Head of Internal Control & Compliance (ICC) - SEVP/DMD",
+        "locations": "['City , State', 'City , State', 'City , State']",
+        "skills": "Lead Development, build teams, mentor, interface with customers and vendors, architect end to end, Develop products in consumer electronics, digital TV, industrial automation, control systems, C, C++, JAVA, JVM, Embedded Linux, LXC, Device Drivers, Socs, RTOS - OS9, VXWorks, DVB, MPEG, H.264, HLS, MP4, JSON, REST, SOAP, XML, SNMP, TR069, Microcontrollers, hardware, Matlab, Octave, Mathematical modeling, Integrating content protection systems, Agile Methodologies, Scrum, SDLC, project planning and management, leadership"
+      },
+      {
+        "job_position_name": "Full Stack Developer (Python,React js)",
+        "locations": "['Toronto', 'Toronto']",
+        "skills": "Object-oriented programming, manual testing, technical report writing, Windows XP/Vista, Unix, Linux, Administration of Windows 2000 Server, MIPS Assembler, Unix Shell Scripts, C, Java, JVS, VBS, PL/SQL, ASP, Digital Logic, Verilog Hardware Language, installation and configuration of peripherals, troubleshooting hardware, embedded systems, robotics, MS Office Suite, MS Visio, MS Project, SQL Navigator, Remedy, Eclipse"
+      },
+      {
+        "job_position_name": "Mechanical Engineer",
+        "locations": "['City , State', 'City , State']",
+        "skills": "C, R, Catia, AutoCAD, ANSYS, Microsoft office, Product Project Management, GD&T, Minitab, Kanban, Kaizen, FMEA, development, Toyota production systems, APQP, PPAP, 8D, 5 why, KPI's, Reliability SAE Standards, Vehicle ergonomics, DVP&R, QCC, CNC engineering, Programming, anatomy, benchmarking, lean manufacturing, manufacturing process, cost analysis, packaging, process engineering, Product Development, surveys, validation, welding"
+      },
+      {
+        "job_position_name": "Data Engineer",
+        "locations": "['City, State', 'City, State', 'City, State']",
+        "skills": "C/Python, R, STK, CATIA, ANSYS, LaTeX, SolidWorks, Microsoft Office, Microsoft Project"
+      },
+      {
+        "job_position_name": "Data Engineer",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "advertising, competitive, content, contracts, customer satisfaction, customer service, customer support, fashion, fast, functional, marketing strategies, marketing, market, marketing material, networking, payroll, progress, promotion, quality, selling, sales, script, strategic, telephone, phone, training manuals"
+      },
+      {
+        "job_position_name": "Civil Engineer",
+        "locations": "['Princeton, NJ', 'Remote', 'Cherry Hill, NJ']",
+        "skills": "HTML, CSS, JavaScript (Angular), Python, Git, Algorithm Design, Technical Writing, Data Analysis, Interpersonal Communication, Patience"
+      },
+      {
+        "job_position_name": "Machine Learning (ML) Engineer",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "Generally Accepted Accounting Principles, Generally Accepted Auditing Standards, Interviewing Techniques, Research & Data Gathering, Financial Analysis, Budget Preparation, Accounts Payable/Accounts Receivable, Implementing Effective Internal Controls, OMB Circular A-133, MS Office, Quickbooks, Accounting, Administrative, Agency, Audit Report, Backup, Bank Reconciliations, Basic, Billing, Budgets, Cash Register, Cashier, Catalog, Clerical, Conferences, Contracts, Client, Data Analysis, Database, Decision-making, Direction, Documentation, Financial, Financial Statements, Funds, Legal, Money, Policies, Processes, Video"
+      },
+      {
+        "job_position_name": "Data Science Engineer",
+        "locations": "['N/A']",
+        "skills": "MIS reporting, Advanced Excel, Dashboards, Data Analysis, SQL, MySQL, Power Bi, Machine Learning, Linear Regression, Statistical Analysis, Clustering, NoSQL, MongoDB, Python, EDA, Business Intelligence, Logistic Regression"
+      },
+      {
+        "job_position_name": "DevOps Engineer",
+        "locations": "['Portland, OR', 'Pittsburgh PA']",
+        "skills": ""
+      },
+      {
+        "job_position_name": "Asst. Manager/ Manger (Administrative)",
+        "locations": "['City, State', 'City, State', 'City, State']",
+        "skills": "streamline, approach, balance sheet, bonds, budgeting, business development, cash flow, clinical research, clinical trials, com, consulting, corporate finance, CRM, database, email, English, equities, Fast, financials, financing, financial, fundraising, funds, graphical user interface, information systems, Innovation, inventory, marketing, network, neural, next, presentations, Speaker, sales, scientific, Spanish, strategy, strategic, websites"
+      },
+      {
+        "job_position_name": "Senior Software Engineer",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "Basic and Advanced Supervision Training Courses, CBMET, Toshiba certified service trained on Aquilion 16, 32 and 64 slice CT's, Toshiba certified service trained on Vantage 1.5 T 8 channel MRI, Toshiba certified service trained on Siemens E-Cam Nuclear Medicine Camera, Aramark service trained on GE AMX 4 and AMX4+ portable XR unit, Aramark service trained on GE 9600, 9800, 9900 Portable C-Arm, Aramark service trained on GE Precision 500 Radiology and Fluoroscopic image system, Microsoft Applications, Foresight Imaging Systems trained on DICOM protocols, Skilled in the operation of MS 2000, Windows 7, MySQL, PHP, Apache, UNIX, Linux, Cisco, Skilled in the operation of networks, Skilled in the operation of workstations and servers"
+      },
+      {
+        "job_position_name": "Senior iOS Engineer",
+        "locations": "['City , State', 'City , State', 'City , State', 'City , State', 'City , State', 'City , State']",
+        "skills": "Problem resolution, Results-oriented, Meticulous attention to detail, Managing multiple priorities, Active Learning, Client Relations, Computer Proficiency, Creative Problem Solving, Critical Thinking, Data Collection, Data Entry, Documentation, Email, Executive Management Support, Filing, Internet Research, Letters and Memos, Minute Taking, Multi-Task Management, Organizational Skills, Research, Scheduling, Service Orientation, Speaking, Spreadsheets, Travel Arrangements"
+      },
+      {
+        "job_position_name": "DevOps Engineer",
+        "locations": "[None, None]",
+        "skills": "Python, Visual Studio Code, Mercurial"
+      },
+      {
+        "job_position_name": "Data Science Engineer",
+        "locations": "['Remote', 'Greenville, SC', 'Greer, SC']",
+        "skills": "Computer System Building and Repair, Hardware and Software Installation, Diagnostic Software Utilities, Remote Access, Networking, Computer Management, CNNs, LSTMs, PyTorch"
+      },
+      {
+        "job_position_name": "Business Development Executive",
+        "locations": "['N/A']",
+        "skills": "Data Science, Analysis, Machine Learning, Bounding Algorithms, Heuristics, ANN, Decision Trees, SVM, Hypothesis Analysis, Optimization"
+      },
+      {
+        "job_position_name": "Senior iOS Engineer",
+        "locations": "[None]",
+        "skills": "Data Analysis, Machine Learning, Data Science, Statistical Analysis, Time Series Analysis, Statistical Modelling, Data Manipulation, Python, R, Tableau, SQL, Django, PostgreSQL"
+      },
+      {
+        "job_position_name": "Executive/ Senior Executive- Trade Marketing, Hygiene Products",
+        "locations": "['City , State', 'City , State', 'City , State', 'City , State']",
+        "skills": "assisted living, interpersonal and communication, insurance, internal medicine, managing, marketing, marketing/sales, meetings, mentor, office, networking, organizing, orthopedics, outside sales, physical therapy, rehabilitation, sales, seminars, Team player, time management"
+      },
+      {
+        "job_position_name": "Executive - VAT",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "Material Management, Law Enforcement, mechanical test equipment, PC's, MS Office, 10key by touch, Customer Service, Forklift and Crane Certification, Self-motivation, Leadership, NDT Level II, mechanical theory, pneumatic and hydraulic theory, automation, closing, coaching, oral, hardware, customer support, designing, direction, hand tools, inventory, ISO 9001, Machinery, materials, mechanical, personnel, processes, Procurement, programming, progress, quality, Quality Control, Receiving, repairs, repairing, research, robotic systems, safety, scheduling, shipping, simulation, Supervisor, Test Equipment, Troubleshooting, written, articles"
+      },
+      {
+        "job_position_name": "Executive - VAT",
+        "locations": "[None]",
+        "skills": "Business analyst, Data modeling, Business intelligence, ERP implementation, html, Requirement Gathering, Power Bi, Project Management"
+      },
+      {
+        "job_position_name": "Data Science Engineer",
+        "locations": "['N/A']",
+        "skills": "Python Programming, Machine Learning, Natural language Processing, Numpy, NLTK, Text Analysis, Transformers, Series Analysis, Conversational AI"
+      },
+      {
+        "job_position_name": "Sr.Officer / Executive - Internal Audit",
+        "locations": "['N/A']",
+        "skills": "Data Analyst, Database Management, Data Integration, Machine Learning, Natural Language Processing, Artificial Intelligence, Deep Learning, Python, SQL, Data Science, Tableau, PowerBi, Business Analysis, AWS Lambda, Spark, PySpark, Azure, SQL Server"
+      },
+      {
+        "job_position_name": "AI Engineer",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "Word, SAP Time Approval, Excel, Travel Arranger, Access Database, Purchase Reqs in SAP, OutLook, IOs in SAP, Pcard purchases, Royalty Agreement Tracking"
+      },
+      {
+        "job_position_name": "Network Support Engineer",
+        "locations": "['N/A']",
+        "skills": "Data Science, Customer analytics, Data Visualization, Natural language Processing, SQL, Python, R, Tableau, Alteryx, Process Improvement"
+      },
+      {
+        "job_position_name": "Senior iOS Engineer",
+        "locations": "['City, State', 'City, State', 'City, State']",
+        "skills": "assembly, AutoCAD, automation, budgets, budget, CNC, electronics, layout, machine tools, machinery, market, materials, mathematics, mechanical, networks, packaging, PLC, policies, presentations, programming, Project management, quality, recording, sales, spreadsheet, team work"
+      },
+      {
+        "job_position_name": "Project Coordinator (Civil)",
+        "locations": "['Austin, TX', 'Austin, TX']",
+        "skills": "JavaScript (Angular), HTML/ CSS, Python (Django), SQL (PostgreSQL, Oracle), REST APIs (GraphQL), Git"
+      },
+      {
+        "job_position_name": "Mechanical Designer",
+        "locations": "['City , State', 'City , State', 'City , State', 'City , State']",
+        "skills": "Microsoft Office (Word, Excel, Power Point, Outlook), Abila MIP Fund Accounting Software, QuickBooks, QuickBooks Pro, Quicken, ADP, Paychex, Payroll Experts, QuickBooks Payroll Systems"
+      },
+      {
+        "job_position_name": "Executive - VAT",
+        "locations": "['N/A']",
+        "skills": "Business Analytics, Data Analysis, Machine Learning, SQL, Firebase, AWS, GCP, Cloud Infrastructure, Python, Text Mining, Database Management and Processing, Time Series Analysis, Research Analysis"
+      },
+      {
+        "job_position_name": "Intern (Generative AI Engineering - 2D/3D Image Generation)",
+        "locations": "['N/A', 'N/A']",
+        "skills": "Know-your-consumer (KYC), Statistical process control, Cost reduction and avoidance, Systems Engineering, Systems Engineering management, Software systems engineering, Quality control, Failure analysis, Tools of operations research, MS Office, Auto CAD, inspection, Lean manufacturing, process control, process design, simulation, system configuration"
+      },
+      {
+        "job_position_name": "HR Officer",
+        "locations": "['N/A']",
+        "skills": "Business Associate, Program Management, Presales, Artificial Intelligence, Data Analytics, Telecommunication, Machine Learning, Cloud, M&E, Conversational AI, Predictive Analytics, Sales, Business Development, NLP, RFP, Computer Vision"
+      },
+      {
+        "job_position_name": "Executive/ Sr. Executive -IT",
+        "locations": "['N/A']",
+        "skills": "Deep learning, Python, SQL, Keras, PyTorch, PySpark, Data Science, Data Analysis, Machine Learning, Natural Language Processing, Artificial Intelligence, Computer Vision, Pattern Recognition, NLP, OpenCV, Image Processing"
+      },
+      {
+        "job_position_name": "Full Stack Developer (Python,React js)",
+        "locations": "['N/A']",
+        "skills": "Data Science, Logistic Regression, Clustering, Data Structures, Software Engineer, Data Analytics, Machine Learning, Visual Studio, Statistical Analysis, Linux, Unix, Python, Software Developer"
+      },
+      {
+        "job_position_name": "Executive/ Sr. Executive -IT",
+        "locations": "['N/A']",
+        "skills": "Business Analysis, Machine Learning, Requirement Gathering, Data Analysis, Artificial Intelligence, Predictive Modeling, Deep Learning, Data Modeling, Manual Testing, Quality Assurance, Python, R, SQL, HTML, Numpy, Tensorflow"
+      },
+      {
+        "job_position_name": "Business Development Executive",
+        "locations": "['City, State', 'City, State', 'City, State']",
+        "skills": "Excellent communication, Inspecting, Team Lead, Modems, Processes, Scheduling, Technician, Trainer, Troubleshooting"
+      },
+      {
+        "job_position_name": "Machine Learning (ML) Engineer",
+        "locations": "['City, State', 'City, State', 'City, State']",
+        "skills": "assembly, ATM, Cadence, calibration, CA, hardware, DC, de-bugging, Ethernet, Graphic, ISO 9000, LabView, layout, Linux OS, Logic, Mentor, Access, MS Office, Windows, multimeters, network, networking, ORCAD, oscilloscopes, power supplies, procurement, purchasing, Quality Assurance, Routers, schematics, signal generators, SONET, Switches, T1, test equipment, trouble shooting, troubleshooting, validation, View"
+      },
+      {
+        "job_position_name": "Machine Learning (ML) Engineer",
+        "locations": "['N/A']",
+        "skills": "Machine Learning, Natural Language Processing, Deep Learning, Business Analysis, Python, Numpy, Pandas, Scikit Learn, Tensorflow, Keras, PySpark"
+      },
+      {
+        "job_position_name": "Data Science Engineer",
+        "locations": "['N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A']",
+        "skills": "Net, photo, agile, analyst, Apple, automation, banking, budgets, business plan, closing, com, consulting, content, contracts, credit, encryption, client, customer satisfaction, data migration, database administration, driving, e-commerce, features, financial, hiring, imaging, information technology, insurance, interpretation, inventory, managing, market planning, marketing, market, marketing and sales, messaging, office, new product development, developer, order management, camera, policies, presenting, pricing, procurement, product development, Product manager, product management, product marketing, program management, quality, quality assurance, QA, radio, real-time, receiving, retail, sales, sales management, shipping, software development, stories, strategy, supply chain, technical support, television, upgrades, UI design, utilities, venture capital, vision, workflow, year-end"
+      },
+      {
+        "job_position_name": "Management Trainee - Mechanical",
+        "locations": "['N/A']",
+        "skills": "Python, Webscrapping, PowerBI, Data Cleaning, Data Preparation, Data Analysis, Predictive Modeling, Data Analytics, Pivot Table, SQL, PostgreSQL, Analytics, Excel, Machine Learning, XML"
+      },
+      {
+        "job_position_name": "Asst. Manager/ Manger (Administrative)",
+        "locations": "['N/A']",
+        "skills": "Data Analysis, Machine learning, Data Mining, Natural Language Processing, Linear Regression, Cluster Analysis, Correlation Analysis, Logistic Regression, Principal Component Analysis, Anova, Neural Networks, R, Python, MySQL, Tableau, Excel, SPSS, Decision tree"
+      },
+      {
+        "job_position_name": "Asst. Manager/ Manger (Administrative)",
+        "locations": "['City, State', 'City, State', 'Kuwait', 'City, State', 'City, State', 'Udaipur, India']",
+        "skills": "3d, accounting, Accountant, Accounts receivables, Adobe Illustrator, Adobe Photoshop, Pagemaker, Audio Editing, auditing, banking, book, Budget preparation, contracts, cost analysis, credit, clients, debit, Dec, documentation, Dos, senior Management, finance, Financial, financial management, Preparation of Financial Statements, HR, Inspection, Inventory, inventory control, Macro Media Director, MS Office, 2K, Windows 9.x, works, MIS, modeling, Developer 2000, Oracle 8I, Oracle, payroll, policies, reporting, Sales, tax, Video Editing"
+      },
+      {
+        "job_position_name": "Data Science Engineer",
+        "locations": "['Minneapolis, Minnesota', 'Fargo, North Dakota']",
+        "skills": "Python, Java, HTML 5, SQL, C Programming, Excel, Access"
+      },
+      {
+        "job_position_name": "Executive/ Senior Executive- Trade Marketing, Hygiene Products",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "3D modeling, architectural drafting, AutoCAD, read blueprints, carpentry, Detail oriented, drafting, email, floor plans, frame, 3dsMax, mechanical, messaging, Microsoft Office applications, Multi-tasking, painting, problem solving skills, reading, renovation, Revit, self-motivated, supervisor"
+      },
+      {
+        "job_position_name": "Data Engineer",
+        "locations": "['N/A']",
+        "skills": "Requirement Analysis, Machine Learning, Predictive Analytics, Python, Tableau, PowerBI, R, SQL, Advanced Excel, Business Analytics"
+      },
+      {
+        "job_position_name": "Intern (Generative AI Engineering - 2D/3D Image Generation)",
+        "locations": "['City , State', 'City , State', 'State', 'City , State']",
+        "skills": "accounting, accounts payable, Accounts Receivable, ADP, advertising, AR, balance sheet, balance, bank reconciliations, benefits, billing, billings, book keeping, budget, cash flow projections, cash flow, controller, Credit, clients, data collection, delivery, documentation, email, Finance, financial, financial reporting, financial statements, fixed assets, General Ledger, inventory, job costing, ledger, legal, materials, meetings, Microsoft Access, Microsoft Excel, Excel, Microsoft Word, negotiating, DBA, Payables, payroll, Peachtree, processes, coding, purchasing, Express, Quick Books, QuickBooks, Research, Sage, Sales, Spreadsheet, Tax, software support, valuation, year-end"
+      },
+      {
+        "job_position_name": "Data Science Engineer",
+        "locations": "['Euclid, OH', 'Cleveland, OH', 'Columbus, OH']",
+        "skills": "iFixit Pro Tech Toolkit, PassMark MemTest86, Malwarebytes, Recuva, Ultimate Boot CD (UBCD), Windows Installation USB/DVD, TeamViewer, Driver Booster, Falcon Dust-Off Compressed Gas Duster, Fluke 115 Compact True-RMS Digital Multimeter"
+      },
+      {
+        "job_position_name": "Head of Internal Control & Compliance (ICC) - SEVP/DMD",
+        "locations": "['City , State', 'City , State', 'City , State', 'City , State', 'City , State']",
+        "skills": "Seasoned Leadership, Experienced Manager, Motivated, Balanced"
+      },
+      {
+        "job_position_name": "DevOps Engineer",
+        "locations": "['N/A']",
+        "skills": "Python, Machine Learning, Natural Language Processing, Text Mining, Data Scientist, Data Analyst, Deep Learning, MongoDB, SQL, Flask, Data Analytics, Big Data Analytics"
+      },
+      {
+        "job_position_name": "Executive - VAT",
+        "locations": "['Remote', 'Vancouver, BC', 'Toronto, Canada']",
+        "skills": "Snowflake, Python, C++, R, SQL, Tableau, PyTorch"
+      },
+      {
+        "job_position_name": "DevOps Engineer",
+        "locations": "['Princeton, NJ', 'Remote', 'Cherry Hill, NJ']",
+        "skills": "HTML, CSS, JavaScript (Angular), Python, Git, Algorithm Design, Technical Writing, Data Analysis, Interpersonal Communication, Patience"
+      },
+      {
+        "job_position_name": "DevOps Engineer",
+        "locations": "['City, State', 'City, State', 'City, State', None]",
+        "skills": "Mechanically-inclined, Diagnosis and repair, Skilled concrete finisher, Preventative maintenance, Dexterous with hand tools, Suspension and alignment, Strong attention to detail, Brake systems expertise, Troubleshooting, Brake repair and replacement, Responsible and reliable, Strategic thinker, Excellent problem solver, Self-starter, Decisive, Critical thinker, customer service, documentation, forklift, forms, legal, materials, policies, problem solving skills, progress, quality assurance, read, repairs, safety, struts, supervisor, tear"
+      },
+      {
+        "job_position_name": "Data Science Engineer",
+        "locations": "['N/A']",
+        "skills": "Business Analysis, Machine Learning, Requirement Gathering, Data Analysis, Artificial Intelligence, Predictive Modeling, Deep Learning, Data Modeling, Manual Testing, Quality Assurance, Python, R, SQL, HTML, Numpy, Tensorflow"
+      },
+      {
+        "job_position_name": "Data Engineer",
+        "locations": "['N/A']",
+        "skills": "Machine Learning, Natural Language Processing, Artificial Intelligence, Python, SQL, Docker, Spacy, Numpy, Pandas, TensorFlow"
+      },
+      {
+        "job_position_name": "Full Stack Developer (Python,React js)",
+        "locations": "['N/A']",
+        "skills": "Machine Learning, Software Development, Text Analysis, Natural Language Processing, Image Processing, Python, Data Management, Scikit Learn, C, C#, .NET, SQL"
+      },
+      {
+        "job_position_name": "Full Stack Developer (Python,React js)",
+        "locations": "['N/A', 'N/A']",
+        "skills": "Machine Learning Engineer, Data Processing, Data Modelling, Data Structures, Deep Learning, Application Development, Python, Django, Flask, Kubernetes, C++"
+      },
+      {
+        "job_position_name": "Intern (Generative AI Engineering - 2D/3D Image Generation)",
+        "locations": "['City , State', 'City , State', 'City , State', 'City , State', 'City , State', 'City , State', 'City , State']",
+        "skills": "budgeting, CAD, construction management, engineer, film, hiring, inspection, laser, machinery, managing, mechanical, negotiations, processes, process improvement, project management, quality, simulation, SPC, strategy, supervision, system administrator, Paper converting equipment, Facility and plant modifications, DMF and Project Work Process, Written and verbal communication skills, AutoCAD, Excel"
+      },
+      {
+        "job_position_name": "Project Coordinator (Civil)",
+        "locations": "['City , State', 'City , State', 'City , State', 'City , State', 'City , State', 'City , State']",
+        "skills": "Problem resolution, Results-oriented, Meticulous attention to detail, Managing multiple priorities, Active Learning, Client Relations, Computer Proficiency, Creative Problem Solving, Critical Thinking, Data Collection, Data Entry, Documentation, Email, Executive Management Support, Filing, Internet Research, Letters and Memos, Minute Taking, Multi-Task Management, Organizational Skills, Research, Scheduling, Service Orientation, Speaking, Spreadsheets, Travel Arrangements"
+      },
+      {
+        "job_position_name": "Network Support Engineer",
+        "locations": "['N/A']",
+        "skills": "Data Science, Data Analysis, Deep Learning, Machine Learning, Artificial Intelligence, Python, MATLAB, NLP, Computer Vision, Keras, Pytorch, RNN"
+      },
+      {
+        "job_position_name": "Executive/ Sr. Executive -IT",
+        "locations": "['DeLand, FL', 'City, State']",
+        "skills": "Project Management, Quality Management System Implementation, Production and Engineering Management, Staff development, Cost reduction, Process development and documentation, Process improvement/simplification, Source evaluation and selection, Experience with AutoCAD, Microsoft Office, Various ERP systems, ISO9001 and AS9100 auditing"
+      },
+      {
+        "job_position_name": "Full Stack Developer (Python,React js)",
+        "locations": "['City, State', 'City, State', 'City, State', 'City, State']",
+        "skills": "Proactive, self-motivated, team player, AP, AR, bank reconciliations, billings, budgets, cash flow projections, government contracting, financial statements, Quickbooks, Peachtree, JDE, Great Plains, LabView, Matlab, Access, Excel, Word"
+      }
+    ]
+  }
+}
