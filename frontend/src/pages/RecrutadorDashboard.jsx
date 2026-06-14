@@ -4,7 +4,7 @@ import { collection, getDocs, doc, query, where, updateDoc, setDoc } from 'fireb
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || '';
 
-const RecrutadorDashboard = ({ user }) => {
+const RecrutadorDashboard = ({ user, isAdmin = false }) => {
   const [vagas, setVagas] = useState([]);
   const [candidaturas, setCandidaturas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,11 +20,16 @@ const RecrutadorDashboard = ({ user }) => {
     if (!user?.uid) return;
     setLoading(true);
     try {
-      // 1. Carregar vagas criadas por este recrutador
-      const vagasQ = query(
-        collection(db, 'vagas_oportunidades'),
-        where('postedByUid', '==', user.uid)
-      );
+      // 1. Carregar vagas criadas por este recrutador (ou todas se for admin)
+      let vagasQ;
+      if (isAdmin) {
+        vagasQ = collection(db, 'vagas_oportunidades');
+      } else {
+        vagasQ = query(
+          collection(db, 'vagas_oportunidades'),
+          where('postedByUid', '==', user.uid)
+        );
+      }
       const vagasSnap = await getDocs(vagasQ);
       const vagasList = [];
       vagasSnap.forEach((doc) => {
@@ -52,7 +57,7 @@ const RecrutadorDashboard = ({ user }) => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, isAdmin]);
 
   useEffect(() => {
     fetchData();

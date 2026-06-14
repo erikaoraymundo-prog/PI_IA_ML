@@ -39,6 +39,18 @@ function App() {
   const [postingVaga, setPostingVaga] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (!e.target.closest('.profile-menu-container')) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, []);
+
 
 
   const fetchJobs = async () => {
@@ -323,24 +335,100 @@ function App() {
               <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('agent'); setIsMenuOpen(false); }} className={currentPage === 'agent' ? 'active' : ''}>🛡️ Verificação</a>
               <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('lgpd'); setIsMenuOpen(false); }} className={currentPage === 'lgpd' ? 'active' : ''}>LGPD</a>
               <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('about'); setIsMenuOpen(false); }} className={currentPage === 'about' ? 'active' : ''}>Sobre Nós</a>
-              {isAdmin && <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('admin'); setIsMenuOpen(false); }} className={currentPage === 'admin' ? 'active' : ''} style={{ color: currentPage === 'admin' ? '#4338ca' : undefined }}>⚙️ Admin</a>}
-              {user && user.userType === 'candidato' && (
-                <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('candidato_dashboard'); setIsMenuOpen(false); }} className={currentPage === 'candidato_dashboard' ? 'active' : ''} style={{ color: currentPage === 'candidato_dashboard' ? '#00a896' : undefined }}>
+              {isAdmin && (
+                <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('admin'); setIsMenuOpen(false); }} className={`mobile-only-link ${currentPage === 'admin' ? 'active' : ''}`} style={{ color: currentPage === 'admin' ? '#4338ca' : undefined }}>
+                  ⚙️ Admin
+                </a>
+              )}
+              {user && (user.userType === 'candidato' || isAdmin) && (
+                <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('candidato_dashboard'); setIsMenuOpen(false); }} className={`mobile-only-link ${currentPage === 'candidato_dashboard' ? 'active' : ''}`} style={{ color: currentPage === 'candidato_dashboard' ? '#00a896' : undefined }}>
                   💼 Minhas Candidaturas
                 </a>
               )}
-              {user && user.userType === 'empresa' && (
-                <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('recrutador_dashboard'); setIsMenuOpen(false); }} className={currentPage === 'recrutador_dashboard' ? 'active' : ''} style={{ color: currentPage === 'recrutador_dashboard' ? '#00a896' : undefined }}>
+              {user && (user.userType === 'empresa' || isAdmin) && (
+                <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('recrutador_dashboard'); setIsMenuOpen(false); }} className={`mobile-only-link ${currentPage === 'recrutador_dashboard' ? 'active' : ''}`} style={{ color: currentPage === 'recrutador_dashboard' ? '#00a896' : undefined }}>
                   🏢 Painel do Recrutador
                 </a>
               )}
             </div>
             <div className="auth-group">
               {user ? (
-                <div className="user-info">
-                  <span>Olá, {user.fullName || user.displayName}</span>
-                  <button onClick={() => { logout(); setIsMenuOpen(false); }} className="btn btn-outline">Sair</button>
-                </div>
+                <>
+                  {/* Desktop Profile Dropdown */}
+                  <div className="profile-menu-container">
+                    <button 
+                      onClick={() => setShowDropdown(!showDropdown)} 
+                      className="profile-avatar-btn"
+                    >
+                      {user.photoURL ? (
+                        <img src={user.photoURL} alt="Perfil" />
+                      ) : (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#64748b' }}>
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                          <circle cx="12" cy="7" r="4" />
+                        </svg>
+                      )}
+                    </button>
+
+                    {showDropdown && (
+                      <div className="profile-dropdown">
+                        <div className="dropdown-header">
+                          <span className="dropdown-name">{user.fullName || user.displayName}</span>
+                          <span className="dropdown-email">{user.email}</span>
+                        </div>
+                        <div className="dropdown-divider"></div>
+                        
+                        {user && (user.userType === 'candidato' || isAdmin) && (
+                          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('candidato_dashboard'); setShowDropdown(false); setIsMenuOpen(false); }}>
+                            💼 Minhas Candidaturas
+                          </a>
+                        )}
+                        {user && (user.userType === 'empresa' || isAdmin) && (
+                          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('recrutador_dashboard'); setShowDropdown(false); setIsMenuOpen(false); }}>
+                            🏢 Painel do Recrutador
+                          </a>
+                        )}
+                        {isAdmin && (
+                          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('admin'); setShowDropdown(false); setIsMenuOpen(false); }} style={{ color: '#4338ca' }}>
+                            ⚙️ Painel Admin
+                          </a>
+                        )}
+                        
+                        <div className="dropdown-divider"></div>
+                        <button onClick={() => { logout(); setShowDropdown(false); setIsMenuOpen(false); }} className="dropdown-logout-btn">
+                          🚪 Sair
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Mobile Profile Card */}
+                  <div className="mobile-profile-card">
+                    <div className="mobile-profile-avatar">
+                      {user.photoURL ? (
+                        <img src={user.photoURL} alt="Perfil" />
+                      ) : (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#64748b' }}>
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                          <circle cx="12" cy="7" r="4" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="mobile-profile-info">
+                      <div className="mobile-profile-name">{user.fullName || user.displayName}</div>
+                      <div className="mobile-profile-email">{user.email}</div>
+                    </div>
+                  </div>
+
+                  {/* Mobile Logout Button */}
+                  <button 
+                    onClick={() => { logout(); setIsMenuOpen(false); }} 
+                    className="btn btn-outline mobile-only-link" 
+                    style={{ width: '100%', marginTop: '1rem', color: '#ef4444', borderColor: '#fee2e2' }}
+                  >
+                    Sair
+                  </button>
+                </>
               ) : (
                 <>
                   <a href="#" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); setIsMenuOpen(false); }} className="login-link">Entrar</a>
@@ -530,7 +618,7 @@ function App() {
             <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
           </div>
         }>
-          <RecrutadorDashboard user={user} />
+          <RecrutadorDashboard user={user} isAdmin={isAdmin} />
         </Suspense>
       )}
 
