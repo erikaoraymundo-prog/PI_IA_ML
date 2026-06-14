@@ -197,7 +197,77 @@ function App() {
         data_postagem: new Date()
       };
       const vagasCol = collection(db, 'vagas_oportunidades');
-      await setDoc(doc(vagasCol), payload);
+      const newVagaDocRef = doc(vagasCol);
+      const newVagaId = newVagaDocRef.id;
+      await setDoc(newVagaDocRef, payload);
+
+      // Autocandidatura ativa para candidatos qualificados
+      try {
+        const candsQuery = query(collection(db, 'users'), where('autoApplyActive', '==', true));
+        const candsSnap = await getDocs(candsQuery);
+        
+        candsSnap.forEach(async (candDoc) => {
+          const cand = candDoc.data();
+          const candUid = candDoc.id;
+          
+          if (!cand.resumeText) return;
+
+          const jobForMatch = {
+            id: newVagaId,
+            titulo: payload.titulo,
+            descricao: payload.descricao,
+            requisitos_tecnicos: payload.requisitos_tecnicos,
+            fonte_tipo: payload.fonte_tipo
+          };
+
+          const matches = calculateMatchScores(cand.resumeText, [jobForMatch]);
+          if (matches.length > 0 && matches[0].score >= 70) {
+            const appRef = doc(collection(db, 'applications'));
+            const snapshot = {
+              fullName: cand.fullName || '',
+              email: cand.email || '',
+              phone: cand.phone || '',
+              cpf: cand.cpf || '',
+              birthDate: cand.birthDate || '',
+              gender: cand.gender || '',
+              country: cand.country || '',
+              state: cand.state || '',
+              city: cand.city || '',
+              neighborhood: cand.neighborhood || '',
+              targetJob: cand.targetJob || '',
+              minSalary: cand.minSalary || '',
+              maxSalary: cand.maxSalary || '',
+              modelPreferences: cand.modelPreferences || [],
+              travelAvailability: cand.travelAvailability || '',
+              aboutMe: cand.aboutMe || '',
+              experiences: cand.experiences || [],
+              educations: cand.educations || [],
+              languages: cand.languages || [],
+              skills: cand.skills || [],
+              resumeUrl: cand.resumeUrl || '',
+              linkedinUrl: cand.linkedinUrl || '',
+              githubUrl: cand.githubUrl || ''
+            };
+
+            await setDoc(appRef, {
+              userId: candUid,
+              userEmail: cand.email,
+              userFullName: cand.fullName,
+              jobId: newVagaId,
+              jobTitle: payload.titulo,
+              resumeUrl: cand.resumeUrl,
+              score: matches[0].score,
+              status: 'pendente',
+              appliedAt: new Date(),
+              appliedAutomatically: true,
+              candidateProfileSnapshot: snapshot
+            });
+          }
+        });
+      } catch (applyErr) {
+        console.error("Erro ao aplicar autocandidaturas para nova vaga:", applyErr);
+      }
+
       alert('Vaga cadastrada com sucesso!');
       setShowVagaModal(false);
       setVagaData({ titulo: '', empresa_nome: '', localizacao: '', escala_trabalho: '', requisitos_tecnicos: '', descricao: '' });
