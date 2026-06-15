@@ -321,6 +321,10 @@ function App() {
       setShowLoginModal(true);
       return;
     }
+    setVagaData(prev => ({
+      ...prev,
+      empresa_nome: user.userType === 'empresa' ? (user.fullName || user.displayName || '') : ''
+    }));
     setShowVagaModal(true);
   };
 
@@ -1209,9 +1213,22 @@ function App() {
                   <label>Título da Vaga *</label>
                   <input id="vaga-titulo" required type="text" className="form-input" value={vagaData.titulo} onChange={e => setVagaData({ ...vagaData, titulo: e.target.value })} placeholder="Ex: Desenvolvedor Full Stack Sênior" />
                 </div>
-                <div className="vaga-form-group">
-                  <label>Nome da Empresa *</label>
-                  <input id="vaga-empresa" required type="text" className="form-input" value={vagaData.empresa_nome} onChange={e => setVagaData({ ...vagaData, empresa_nome: e.target.value })} placeholder="Nome da empresa ou razão social" />
+                 <div className="vaga-form-group">
+                  <label>
+                    Nome da Empresa * 
+                    {user && user.userType === 'empresa' && <span style={{ fontSize: '0.8rem', color: '#64748b', marginLeft: '0.35rem' }}>🔒</span>}
+                  </label>
+                  <input 
+                    id="vaga-empresa" 
+                    required 
+                    type="text" 
+                    className="form-input" 
+                    value={vagaData.empresa_nome} 
+                    onChange={e => setVagaData({ ...vagaData, empresa_nome: e.target.value })} 
+                    placeholder="Nome da empresa ou razão social" 
+                    disabled={user && user.userType === 'empresa'}
+                    style={{ background: user && user.userType === 'empresa' ? '#f1f5f9' : undefined, cursor: user && user.userType === 'empresa' ? 'not-allowed' : undefined }}
+                  />
                 </div>
                 <div className="vaga-form-group">
                   <label>Localização *</label>
