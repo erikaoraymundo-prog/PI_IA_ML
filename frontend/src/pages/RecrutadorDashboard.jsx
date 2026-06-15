@@ -320,7 +320,7 @@ const RecrutadorDashboard = ({ user, isAdmin = false }) => {
       }}>
         <div style={{ position: 'relative', zIndex: 2 }}>
           <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.8rem', color: 'white' }}>
-            🏢 Painel do Recrutador (Gupy Match)
+            🏢 Painel do Recrutador (GTB Match)
           </h1>
           <p style={{ fontSize: '1.05rem', opacity: 0.9, color: '#e0f2fe', margin: 0 }}>
             Gerencie suas oportunidades e filtre os candidatos por compatibilidade de inteligência artificial.
@@ -516,7 +516,7 @@ const RecrutadorDashboard = ({ user, isAdmin = false }) => {
                         </div>
                       </div>
 
-                      {/* Status / Ação Gupy */}
+                      {/* Status */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <button 
                           onClick={() => handleOpenProfile(app)}
