@@ -459,7 +459,7 @@ const RecrutadorDashboard = ({ user, isAdmin = false }) => {
         </>
       )}
 
-      {/* MODAL: LISTAGEM DE CANDIDATOS (ESTILO GUPY) */}
+      {/* MODAL: LISTAGEM DE CANDIDATOS (ESTILO GTB) */}
       {selectedVaga && (
         <div className="overlay" onClick={() => setSelectedVaga(null)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div className="modal" onClick={e => e.stopPropagation()} style={{
