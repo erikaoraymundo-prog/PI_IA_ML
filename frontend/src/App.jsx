@@ -344,7 +344,10 @@ function App() {
         return;
       }
 
-      const resumeText = userDoc.data().resumeText;
+      const updatedUserData = userDoc.data();
+      setUser(prev => prev ? { ...prev, ...updatedUserData } : null);
+
+      const resumeText = updatedUserData.resumeText;
 
       // 2. Busca vagas ativas do Firestore
       const jobsSnap = await getDocs(collection(db, 'vagas_oportunidades'));
@@ -431,7 +434,14 @@ function App() {
     if (!user || matches.length === 0) return;
     setApplying(true);
     try {
-      let downloadURL = user.resumeUrl || '';
+      // 1. Obter os dados atualizados do perfil diretamente do Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userData = userDoc.exists() ? userDoc.data() : {};
+      
+      // Atualizar o estado local do usuário no root
+      setUser(prev => prev ? { ...prev, ...userData } : null);
+
+      let downloadURL = userData.resumeUrl || '';
 
       // Se não tiver resumeUrl no perfil, mas tiver um arquivo carregado localmente, faz o upload
       if (!downloadURL && currentFile) {
@@ -441,6 +451,11 @@ function App() {
 
         const snapshot = await uploadBytes(storageRef, currentFile);
         downloadURL = await getDownloadURL(snapshot.ref);
+
+        // Salvar a nova url do currículo no Firestore e atualizar o estado local
+        const docRef = doc(db, 'users', user.uid);
+        await setDoc(docRef, { resumeUrl: downloadURL }, { merge: true });
+        setUser(prev => prev ? { ...prev, resumeUrl: downloadURL } : null);
       }
 
       if (!downloadURL) {
@@ -453,9 +468,6 @@ function App() {
       for (const match of matches) {
         const appRef = doc(collection(db, 'applications'));
         
-        // Buscar dados do perfil do usuário para snapshot
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        const userData = userDoc.exists() ? userDoc.data() : {};
         const snapshot = {
           fullName: userData.fullName || user.displayName || '',
           email: userData.email || user.email || '',
@@ -963,7 +975,7 @@ function App() {
             <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
           </div>
         }>
-          <EditarPerfil user={user} />
+          <EditarPerfil user={user} onProfileUpdate={(data) => setUser(prev => prev ? { ...prev, ...data } : null)} />
         </Suspense>
       )}
       {currentPage === 'perfil_empresa' && (
@@ -974,7 +986,7 @@ function App() {
             <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
           </div>
         }>
-          <PerfilEmpresa user={user} />
+          <PerfilEmpresa user={user} onProfileUpdate={(data) => setUser(prev => prev ? { ...prev, ...data } : null)} />
         </Suspense>
       )}
 

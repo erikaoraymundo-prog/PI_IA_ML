@@ -4,7 +4,7 @@ import { doc, getDoc, setDoc, collection, getDocs, query, where, deleteDoc } fro
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { calculateMatchScores, extractTextFromPDF } from '../matchingEngine';
 
-const EditarPerfil = ({ user }) => {
+const EditarPerfil = ({ user, onProfileUpdate }) => {
   const [profileData, setProfileData] = useState({
     fullName: '',
     email: '',
@@ -262,6 +262,9 @@ const EditarPerfil = ({ user }) => {
       };
       await setDoc(docRef, payload, { merge: true });
       showFeedback("Perfil atualizado com sucesso!");
+      if (onProfileUpdate) {
+        onProfileUpdate(payload);
+      }
     } catch (err) {
       console.error("Erro ao salvar perfil:", err);
       showFeedback("Falha ao salvar dados do perfil.", "error");
@@ -442,6 +445,9 @@ const EditarPerfil = ({ user }) => {
           const docRef = doc(db, 'users', user.uid);
           await setDoc(docRef, { autoApplyActive: false }, { merge: true });
           setProfileData(prev => ({ ...prev, autoApplyActive: false }));
+          if (onProfileUpdate) {
+            onProfileUpdate({ autoApplyActive: false });
+          }
           showFeedback("Candidatura automática desativada.");
         } catch (err) {
           console.error(err);
@@ -462,6 +468,9 @@ const EditarPerfil = ({ user }) => {
       };
       await setDoc(docRef, payload);
       setProfileData(payload);
+      if (onProfileUpdate) {
+        onProfileUpdate(payload);
+      }
 
       await runRetroactiveAutoApply();
     } catch (err) {

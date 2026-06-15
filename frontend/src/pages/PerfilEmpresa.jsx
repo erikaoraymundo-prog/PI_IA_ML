@@ -3,7 +3,7 @@ import { db, storage } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const PerfilEmpresa = ({ user }) => {
+const PerfilEmpresa = ({ user, onProfileUpdate }) => {
   const [profileData, setProfileData] = useState({
     companyName: '',
     tradeName: '',
@@ -163,6 +163,9 @@ const PerfilEmpresa = ({ user }) => {
       };
       await setDoc(docRef, payload, { merge: true });
       showFeedback("Perfil da empresa atualizado com sucesso!");
+      if (onProfileUpdate) {
+        onProfileUpdate(payload);
+      }
     } catch (err) {
       console.error("Erro ao salvar perfil corporativo:", err);
       showFeedback("Falha ao salvar dados do perfil.", "error");
