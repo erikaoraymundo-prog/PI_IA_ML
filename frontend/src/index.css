@@ -1,10 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --primary: #6366f1;
   --primary: #004d5b;
+  --primary-hover: #00363f;
   --primary-light: #006d80;
   --secondary: #00a896;
+  --secondary-hover: #008a7b;
   --bg-light: #f8fafa;
   --text-dark: #1a202c;
   --text-muted: #4a5568;
@@ -12,6 +13,12 @@
   --border-color: #e2e8f0;
   --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --header-height: 80px;
+
+  /* Corrigindo variáveis de hover e consistência */
+  --surface: #ffffff;
+  --surface-hover: #f8fafc;
+  --border: #e2e8f0;
+  --radius: 12px;
 }
 
 * {
@@ -589,10 +596,25 @@ h4,
 .btn-primary {
   background-color: var(--primary);
   color: white;
+  border: 1px solid var(--primary);
 }
 
 .btn-primary:hover {
   background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: white;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--text-dark);
+  border: 1px solid var(--border-color);
+}
+
+.btn-outline:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: var(--text-dark);
 }
 
 .grid {
