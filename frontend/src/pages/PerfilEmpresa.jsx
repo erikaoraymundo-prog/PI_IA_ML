@@ -69,6 +69,7 @@ const PerfilEmpresa = ({ user }) => {
 
   const showFeedback = (message, type = 'success') => {
     setFeedback({ message, type });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => setFeedback(null), 4000);
   };
 
