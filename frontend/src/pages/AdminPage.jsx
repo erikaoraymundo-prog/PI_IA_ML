@@ -106,20 +106,11 @@ const AdminPage = ({ user, onLoginRequired }) => {
         
         // Garantir que os administradores canônicos estejam incluídos
         const emailsInList = new Set(list.map(a => a.email.toLowerCase()));
-        if (!emailsInList.has('guroberto.dev@gmail.com')) {
+        if (!emailsInList.has('admin@admin.com')) {
           list.push({
-            id: 'super-gu',
-            email: 'guroberto.dev@gmail.com',
-            nome: 'Gustavo Roberto (Super Admin)',
-            role: 'super_admin',
-            addedAt: '2026-05-28T18:00:00Z',
-          });
-        }
-        if (!emailsInList.has('erikao.raymundo@gmail.com')) {
-          list.push({
-            id: 'super-erik',
-            email: 'erikao.raymundo@gmail.com',
-            nome: 'Erik (Super Admin)',
+            id: 'super-admin',
+            email: 'admin@admin.com',
+            nome: 'Administrador Principal (Super Admin)',
             role: 'super_admin',
             addedAt: '2026-05-28T18:00:00Z',
           });
@@ -127,10 +118,9 @@ const AdminPage = ({ user, onLoginRequired }) => {
         setAdmins(list);
       } catch (fsErr) {
         console.error('Erro ao buscar admins do Firestore:', fsErr);
-        // Fallback final com os dois admins fixos
+        // Fallback final com o admin fixo
         setAdmins([
-          { id: 'super-gu', email: 'guroberto.dev@gmail.com', nome: 'Gustavo Roberto (Super Admin)', role: 'super_admin', addedAt: '2026-05-28T18:00:00Z' },
-          { id: 'super-erik', email: 'erikao.raymundo@gmail.com', nome: 'Erik (Super Admin)', role: 'super_admin', addedAt: '2026-05-28T18:00:00Z' }
+          { id: 'super-admin', email: 'admin@admin.com', nome: 'Administrador Principal (Super Admin)', role: 'super_admin', addedAt: '2026-05-28T18:00:00Z' }
         ]);
       }
     } finally {

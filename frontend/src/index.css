@@ -2323,3 +2323,20 @@ textarea:focus {
     width: 100%;
   }
 }
+
+/* Onboarding Role Selection Cards */
+.role-selection-card {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.role-selection-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+.role-selection-card:first-child:hover {
+  border-color: var(--primary) !important;
+  background: #f0f8fa !important;
+}
+.role-selection-card:last-child:hover {
+  border-color: var(--secondary) !important;
+  background: #f0fbfc !important;
+}
